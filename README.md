@@ -11,6 +11,8 @@ A premium, interactive, and editorial "aurora" portfolio showcasing end-to-end A
 
 [Live Vercel Site](https://portfolio-website-zeta-topaz-84.vercel.app/) &nbsp;•&nbsp; [GitHub Pages Mirror](https://AyushDas4890.github.io/Portfolio-2/) &nbsp;•&nbsp; [Download Résumé](https://portfolio-website-zeta-topaz-84.vercel.app/Ayush_Das_ML_Resume.pdf)
 
+<!-- Vercel continuous deployment trigger -->
+
 </div>
 
 ## 🛠️ Tech Stack & Skills
