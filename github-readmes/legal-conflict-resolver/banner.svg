@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 320" width="1280" height="320" role="img" aria-label="Legal Clause Conflict Resolver">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1019"/><stop offset="1" stop-color="#0e1626"/>
+    </linearGradient>
+    <linearGradient id="acc" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#4d9fff"/><stop offset="1" stop-color="#7afcd0"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#1b2434" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1280" height="320" rx="18" fill="url(#bg)"/>
+  <rect width="1280" height="320" rx="18" fill="url(#grid)" opacity="0.5"/>
+  <circle cx="1080" cy="160" r="240" fill="#4d9fff" opacity="0.07"/>
+  <!-- scales of justice motif -->
+  <g transform="translate(980,70)" stroke="url(#acc)" stroke-width="3" fill="none" opacity="0.85">
+    <line x1="100" y1="0" x2="100" y2="170"/>
+    <line x1="30" y1="35" x2="170" y2="35"/>
+    <path d="M30 35 L5 95 a35 22 0 0 0 50 0 Z" fill="#4d9fff" fill-opacity="0.12"/>
+    <path d="M170 35 L145 95 a35 22 0 0 0 50 0 Z" fill="#7afcd0" fill-opacity="0.12"/>
+    <line x1="60" y1="170" x2="140" y2="170"/>
+    <circle cx="100" cy="35" r="6" fill="#4d9fff" stroke="none"/>
+  </g>
+  <text x="70" y="120" font-family="'Segoe UI',Arial,sans-serif" font-size="20" letter-spacing="5" fill="#7afcd0">LEGAL NLP · LLM · EXPLAINABLE AI</text>
+  <text x="68" y="190" font-family="Georgia,'Times New Roman',serif" font-size="62" font-weight="700" fill="#eef3fb">Legal Clause Conflict Resolver</text>
+  <text x="70" y="232" font-family="'Segoe UI',Arial,sans-serif" font-size="23" fill="#9fb0c4">Detect contradictions across legal &amp; financial documents — with evidence.</text>
+  <g font-family="'Consolas',monospace" font-size="15" fill="#cfe0f5">
+    <rect x="70" y="258" width="118" height="30" rx="8" fill="#13203a" stroke="#27406b"/><text x="88" y="278">DeBERTa-v3</text>
+    <rect x="200" y="258" width="92" height="30" rx="8" fill="#13203a" stroke="#27406b"/><text x="216" y="278">PyTorch</text>
+    <rect x="304" y="258" width="92" height="30" rx="8" fill="#13203a" stroke="#27406b"/><text x="320" y="278">FastAPI</text>
+    <rect x="408" y="258" width="78" height="30" rx="8" fill="#13203a" stroke="#27406b"/><text x="424" y="278">FAISS</text>
+    <rect x="498" y="258" width="84" height="30" rx="8" fill="#13203a" stroke="#27406b"/><text x="514" y="278">spaCy</text>
+  </g>
+</svg>
