@@ -11,15 +11,16 @@ Recruiters, hiring managers, and fellow engineers evaluating Ayush Das (AI/ML en
 Personal portfolio (v2, "glossy ring" rebuild) that demonstrates engineering skill by being the demonstration — a scroll-driven cinematic site anchored by an interactive glossy 3D ring. Success: visitor remembers the site, opens a repo, the CV, or a certificate.
 
 ## Reference
-`frames.zip` — 16 frames of the target look: deep-navy stage, glossy twisted ring hero with warm inner glow, serif display name, dark monogram project cards revealing abstract artwork, gradient-framed case bands with topographic texture.
+v3 (2026-08-26, Apple-design redesign): true-black stage, cool space-gray glossy ring whose inner glow shifts hue per act (blue/violet/green/orange/indigo — echoing macOS app-icon tinting on a neutral shell), bold tight-tracked display type (Inter Tight, no serif), translucent frosted-glass materials on nav/cards/lightbox, instant press feedback and spring-adjacent easing per the `apple-design` skill. `frames.zip` is the historical v2 reference (navy/warm/serif) — superseded, kept for provenance only.
 
 ## Brand Personality
-Gallery-grade restraint: an art-exhibition site for engineering work. Cinematic but controlled; glow is rare and warm. Serif display (Fraunces) against spaced-caps sans (Archivo).
+Gallery-grade restraint carried into an Apple-keynote register: quiet, confident, materially rich. Cinematic but controlled; color is used the way Apple uses it — one neutral chrome language plus a rotating single accent hue per section, never several accents competing at once. Bold sans display (Inter Tight) against tightly-tracked caps (Inter).
 
 ## Anti-references
 - Generic dev-portfolio template: card-grid-with-icons, purple gradient hero, typing-cursor tagline.
 - Corporate SaaS landing: hero-metric blocks, feature-card grids.
 - Neon cyberpunk overload: Matrix green, synthwave gradients.
+- Flat opaque UI chrome: any nav/card/sheet without translucency or blur where Apple materials call for it.
 
 ## Design Principles
 1. Show, don't tell — the ring and motion ARE the skill evidence.

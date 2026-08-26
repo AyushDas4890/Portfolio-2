@@ -6,13 +6,13 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 
 // Per-section palettes: [outer shell, inner glow a, inner glow b]
 const SECTION_PALETTES = [
-  ['#1b3170', '#ff5f8f', '#ff9c4a'], // 01 hero — navy / pink-orange
-  ['#22346e', '#c9865a', '#ffb27a'], // 02 about — navy / warm bronze
-  ['#273572', '#8f9fe8', '#c9d4ff'], // 03 work — periwinkle
-  ['#1d3d54', '#2fb8a6', '#ffb27a'], // 04 case — teal / peach
-  ['#203a4e', '#2fb8a6', '#7afcd0'], // 05 experience — teal
-  ['#3a3450', '#8f9fe8', '#e8a35c'], // 06 credentials — violet / amber
-  ['#4a3a2a', '#e8a35c', '#ffd07a'], // 07 contact — amber
+  ['#1c1c1e', '#2997ff', '#5ac8fa'], // 01 hero — space-gray shell / blue glow
+  ['#202022', '#0a84ff', '#64d2ff'], // 02 about — space-gray / sky blue
+  ['#242426', '#bf5af2', '#da8fff'], // 03 work — space-gray / violet
+  ['#1c1c1e', '#30d158', '#7ee89b'], // 04 case — space-gray / green
+  ['#1e1e20', '#ff9f0a', '#ffbf5c'], // 05 experience — space-gray / orange
+  ['#202024', '#5e5ce6', '#9d9aff'], // 06 credentials — space-gray / indigo
+  ['#1c1c1e', '#2997ff', '#5ac8fa'], // 07 contact — back to blue
 ]
 
 function buildRingGeometry(radial = 200, tubular = 64) {
@@ -116,7 +116,7 @@ export default class RingScene {
     this.glassMat = null
     if (!isMobile) {
       this.glassMat = new THREE.MeshPhysicalMaterial({
-        color: '#dfe8ff',
+        color: '#e6ecff',
         metalness: 0,
         roughness: 0.05,
         transmission: 0.92,
@@ -132,13 +132,13 @@ export default class RingScene {
     }
 
     // key + rim lights (env does most of the work)
-    const key = new THREE.DirectionalLight('#cdd8ff', 1.4)
+    const key = new THREE.DirectionalLight('#e8f0ff', 1.4)
     key.position.set(3, 4, 5)
     this.scene.add(key)
-    const rim = new THREE.DirectionalLight('#ff9c6a', 0.9)
+    const rim = new THREE.DirectionalLight('#8f6dff', 0.7)
     rim.position.set(-4, -2, -3)
     this.scene.add(rim)
-    this.scene.add(new THREE.AmbientLight('#101a3a', 1.2))
+    this.scene.add(new THREE.AmbientLight('#0c0c14', 1.2))
 
     // pose
     this.group.rotation.set(0.72, -0.35, -0.3)

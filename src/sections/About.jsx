@@ -3,10 +3,10 @@ import { profile, education } from '../data.js'
 import { maskReveal } from '../lib/motion.js'
 
 const coreSkills = [
-  { icon: '⚡', label: 'LangGraph & Multi-Agent', desc: 'Autonomous agent orchestration' },
-  { icon: '🧠', label: 'NLP & Transformers', desc: 'DeBERTa, BERT, fine-tuning' },
-  { icon: '🔍', label: 'RAG Systems', desc: 'ChromaDB, vector retrieval' },
-  { icon: '🚀', label: 'Full-Stack ML', desc: 'FastAPI, React, deployment' },
+  { icon: '◆', label: 'LangGraph & Multi-Agent', desc: 'Autonomous agent orchestration' },
+  { icon: '●', label: 'NLP & Transformers', desc: 'DeBERTa, BERT, fine-tuning' },
+  { icon: '◈', label: 'RAG Systems', desc: 'ChromaDB, vector retrieval' },
+  { icon: '▲', label: 'Full-Stack ML', desc: 'FastAPI, React, deployment' },
 ]
 
 const stats = [
