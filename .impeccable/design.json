@@ -1,0 +1,217 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-26T00:00:00Z",
+  "title": "Design System: Ayush Das Portfolio",
+  "extensions": {
+    "colorMeta": {
+      "peri": {
+        "role": "primary",
+        "displayName": "System Blue",
+        "canonical": "#2997ff",
+        "tonalRamp": [
+          "#001a33",
+          "#00325c",
+          "#004c85",
+          "#0868ad",
+          "#2997ff",
+          "#66b6ff",
+          "#a3d3ff",
+          "#e0f0ff"
+        ]
+      },
+      "orange": {
+        "role": "secondary",
+        "displayName": "System Purple",
+        "canonical": "#bf5af2",
+        "tonalRamp": [
+          "#2c0a3d",
+          "#4a1466",
+          "#6c1f8f",
+          "#9438c0",
+          "#bf5af2",
+          "#d48af7",
+          "#e5b8fb",
+          "#f5e4fd"
+        ]
+      },
+      "gold": {
+        "role": "tertiary",
+        "displayName": "System Orange",
+        "canonical": "#ff9f0a",
+        "tonalRamp": [
+          "#3d2400",
+          "#663d00",
+          "#8f5700",
+          "#c07800",
+          "#ff9f0a",
+          "#ffbc52",
+          "#ffd894",
+          "#fff0d6"
+        ]
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "Off-White Text",
+        "canonical": "#f5f5f7"
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Warm Gray Muted",
+        "canonical": "#98989d"
+      },
+      "bg": {
+        "role": "neutral",
+        "displayName": "True Black",
+        "canonical": "#000000"
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink Surface",
+        "canonical": "#111113"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero name, contact headline, case-band titles only. Real OS system font, no webfont load."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Descriptions, problem/approach copy."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Kickers, index numerals, nav counter, chips."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card-lift",
+        "value": "0 4px 24px rgba(0,0,0,0.6)",
+        "purpose": "Certificate thumbnail hover lift."
+      },
+      {
+        "name": "lightbox-pop",
+        "value": "0 8px 60px rgba(0,0,0,0.7)",
+        "purpose": "Fullscreen certificate image."
+      },
+      {
+        "name": "accent-glow",
+        "value": "0 0 12px 1px var(--pa)",
+        "purpose": "Work-card baseline glow, tied to project accent."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Default UI easing, expo-out / spring-adjacent."
+      },
+      {
+        "name": "ease-spring",
+        "value": "cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "purpose": "Momentum/bounce moments only (card release, elastic hover-out)."
+      },
+      {
+        "name": "press-feedback",
+        "value": "transform 0.15s var(--ease); active scale 0.975",
+        "purpose": "Instant feedback on pointer-down for every link/button."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "560px"
+      },
+      {
+        "name": "md",
+        "value": "900px"
+      },
+      {
+        "name": "lg",
+        "value": "1100px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button (Resume CTA)",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Pill-shaped glass CTA used for the resume download.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">Download resume</a>",
+      "css": ".ds-btn-primary { display:inline-block; padding:1rem 2.6rem; border-radius:999px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.04); backdrop-filter:blur(16px); color:#f5f5f7; font-family:-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI Variable', 'Segoe UI', Roboto, system-ui, sans-serif; font-weight:600; font-size:0.74rem; letter-spacing:0.14em; text-transform:uppercase; transition:transform 0.15s cubic-bezier(0.16,1,0.3,1), border-color 0.4s, background 0.4s; } .ds-btn-primary:hover { border-color:#2997ff; background:rgba(41,151,255,0.12); } .ds-btn-primary:active { transform:scale(0.975); }"
+    },
+    {
+      "name": "Work Card",
+      "kind": "card",
+      "refersTo": "work-card",
+      "description": "Glass project card with monogram mark, hover-reveal artwork, and an accent baseline glow.",
+      "html": "<a class=\"ds-work-card\" href=\"#\"><span class=\"ds-work-mark\">AI</span><span class=\"ds-work-title\">Research Assistant</span><span class=\"ds-work-base\"></span></a>",
+      "css": ".ds-work-card { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; aspect-ratio:4/5; padding-bottom:1.6rem; border-radius:22px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.04); backdrop-filter:blur(24px); overflow:hidden; transition:border-color 0.5s cubic-bezier(0.16,1,0.3,1); } .ds-work-card:hover { border-color:rgba(41,151,255,0.45); } .ds-work-mark { color:#2997ff; font-weight:700; font-size:2rem; margin-bottom:1rem; } .ds-work-title { color:#f5f5f7; font-size:0.7rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; } .ds-work-base { position:absolute; bottom:0; left:50%; translate:-50% 0; width:34%; height:2px; background:#2997ff; box-shadow:0 0 12px 1px #2997ff; transform:scaleX(0); transition:transform 0.7s cubic-bezier(0.16,1,0.3,1); } .ds-work-card:hover .ds-work-base { transform:scaleX(1); }"
+    },
+    {
+      "name": "Translucent Nav Bar",
+      "kind": "nav",
+      "refersTo": "nav-bar",
+      "description": "Fixed frosted-glass top bar with centered wordmark.",
+      "html": "<header class=\"ds-nav\"><span class=\"ds-nav-mark\">ad.</span></header>",
+      "css": ".ds-nav { display:flex; align-items:center; justify-content:center; padding:1.1rem 0; background:rgba(10,10,12,0.55); backdrop-filter:blur(20px) saturate(180%); border-bottom:1px solid rgba(255,255,255,0.08); } .ds-nav-mark { font-family:-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI Variable', 'Segoe UI', Roboto, system-ui, sans-serif; font-weight:700; font-size:1.25rem; letter-spacing:-0.02em; color:#f5f5f7; }"
+    },
+    {
+      "name": "Skill Card",
+      "kind": "card",
+      "refersTo": "skill-card",
+      "description": "Glass competency card with a monochrome glyph, name, and description.",
+      "html": "<div class=\"ds-skill-card\"><span class=\"ds-skill-icon\">\u25c6</span><div><div class=\"ds-skill-name\">RAG Systems</div><div class=\"ds-skill-desc\">ChromaDB, vector retrieval</div></div></div>",
+      "css": ".ds-skill-card { display:flex; gap:1rem; align-items:flex-start; padding:1.6rem; border-radius:18px; border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.035); backdrop-filter:blur(20px); transition:border-color 0.4s, background 0.4s, transform 0.4s; } .ds-skill-card:hover { border-color:rgba(41,151,255,0.35); background:rgba(255,255,255,0.06); transform:translateY(-2px); } .ds-skill-icon { color:#2997ff; font-weight:700; font-size:1.1rem; } .ds-skill-name { color:#f5f5f7; font-size:0.9rem; font-weight:600; } .ds-skill-desc { color:#98989d; font-size:0.76rem; }"
+    },
+    {
+      "name": "Credential Cell",
+      "kind": "card",
+      "refersTo": "cred-cell",
+      "description": "Grid cell for a certificate, issuer caption on top, title, footer index + link.",
+      "html": "<a class=\"ds-cred-cell\" href=\"#\"><span class=\"ds-cred-issuer\">COURSERA</span><span class=\"ds-cred-title\">Python for Data Science</span><span class=\"ds-cred-foot\"><span>01</span><span>View \u2197</span></span></a>",
+      "css": ".ds-cred-cell { display:flex; flex-direction:column; gap:1.4rem; padding:2.2rem 1.8rem 2rem; border-right:1px solid rgba(255,255,255,0.14); border-bottom:1px solid rgba(255,255,255,0.14); transition:background 0.45s; } .ds-cred-cell:hover { background:rgba(41,151,255,0.08); } .ds-cred-issuer { color:#2997ff; font-size:0.66rem; letter-spacing:0.14em; } .ds-cred-title { color:#f5f5f7; font-family:-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI Variable', 'Segoe UI', Roboto, system-ui, sans-serif; font-weight:600; font-size:1.2rem; } .ds-cred-foot { display:flex; justify-content:space-between; color:#98989d; font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Keynote Stage",
+    "overview": "A dark, materially rich engineering portfolio staged the way Apple stages a product: one confident chrome language, a single glowing accent per act, everything else standing back. A twisted glossy 3D ring anchors the scroll \u2014 it is not decoration, it is the exhibit, changing color as the visitor moves through six acts. The interface behaves like glass and metal on a stage, not like a document.",
+    "keyCharacteristics": [
+      "True-black stage with cool space-gray hardware and a rotating single-hue glow per section",
+      "Translucent frosted glass on every floating surface (nav, cards, lightbox) \u2014 never two stacked",
+      "Bold, tightly-tracked sans display type; no serif anywhere",
+      "Instant, physical press feedback on every interactive element"
+    ],
+    "rules": [
+      {
+        "name": "The One Glow Rule",
+        "body": "Exactly one accent hue is active per section, carried by the ring and mirrored in that section's labels. Two accent hues never appear as equals in the same viewport.",
+        "section": "colors"
+      },
+      {
+        "name": "The Negative Tracking Rule",
+        "body": "Tracking tightens as size grows (-0.03em at display scale) and loosens toward neutral at body scale; caps labels get positive tracking (0.14em), not the old 0.42em maximalist spacing.",
+        "section": "typography"
+      },
+      {
+        "name": "The Glass-Not-Shadow Rule",
+        "body": "Nav, cards, and the lightbox get their depth from blur + translucency, not shadows. Shadows are reserved for the few elements meant to feel physically lifted off the glass.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep exactly one accent hue live per section, mirrored between the ring glow and that section's labels.",
+      "Do build every floating surface as translucent glass \u2014 backdrop-filter + hairline border, never flat opaque fill.",
+      "Do give every clickable element instant :active press feedback (scale 0.975).",
+      "Do tighten letter-spacing as type size grows; loosen only on caps labels."
+    ],
+    "donts": [
+      "Don't introduce a second display typeface or bring back a serif.",
+      "Don't stack two translucent surfaces on top of each other.",
+      "Don't let more than one accent color read as dominant in the same viewport.",
+      "Don't add drop shadows to glass surfaces as a substitute for blur."
+    ]
+  }
+}

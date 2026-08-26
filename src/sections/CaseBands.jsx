@@ -43,7 +43,7 @@ function CaseBand({ p }) {
             onError={(e) => {
               e.currentTarget.style.display = 'none'
               e.currentTarget.parentElement.style.background =
-                `radial-gradient(80% 120% at 30% 20%, ${p.palette.a} 0%, #0b1229 75%)`
+                `radial-gradient(80% 120% at 30% 20%, ${p.palette.a} 0%, #111113 75%)`
             }}
           />
         </div>
