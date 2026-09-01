@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 320" width="1280" height="320" role="img" aria-label="Grocery Sales Predictor">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1019"/><stop offset="1" stop-color="#0e1626"/>
+    </linearGradient>
+    <linearGradient id="bar" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#2f6fdb"/><stop offset="1" stop-color="#7afcd0"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#1b2434" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1280" height="320" rx="18" fill="url(#bg)"/>
+  <rect width="1280" height="320" rx="18" fill="url(#grid)" opacity="0.5"/>
+  <circle cx="1090" cy="150" r="240" fill="#7afcd0" opacity="0.06"/>
+  <!-- bar chart + trend motif -->
+  <g transform="translate(940,90)">
+    <rect x="0"   y="120" width="34" height="70"  rx="4" fill="url(#bar)" opacity="0.85"/>
+    <rect x="48"  y="80"  width="34" height="110" rx="4" fill="url(#bar)" opacity="0.85"/>
+    <rect x="96"  y="100" width="34" height="90"  rx="4" fill="url(#bar)" opacity="0.85"/>
+    <rect x="144" y="40"  width="34" height="150" rx="4" fill="url(#bar)" opacity="0.85"/>
+    <rect x="192" y="70"  width="34" height="120" rx="4" fill="url(#bar)" opacity="0.85"/>
+    <polyline points="17,120 65,80 113,100 161,40 209,70" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.7"/>
+    <circle cx="161" cy="40" r="6" fill="#7afcd0"/>
+  </g>
+  <text x="70" y="120" font-family="'Segoe UI',Arial,sans-serif" font-size="20" letter-spacing="5" fill="#7afcd0">DEMAND FORECASTING · TIME-SERIES ML</text>
+  <text x="68" y="190" font-family="Georgia,'Times New Roman',serif" font-size="62" font-weight="700" fill="#eef3fb">Grocery Sales Predictor</text>
+  <text x="70" y="232" font-family="'Segoe UI',Arial,sans-serif" font-size="23" fill="#9fb0c4">Forecast seasonal grocery demand from store, product &amp; temporal signals.</text>
+  <g font-family="'Consolas',monospace" font-size="15" fill="#cfe0f5">
+    <rect x="70" y="258" width="104" height="30" rx="8" fill="#13203a" stroke="#27406b"/><text x="86" y="278">Streamlit</text>
+    <rect x="186" y="258" width="118" height="30" rx="8" fill="#13203a" stroke="#27406b"/><text x="202" y="278">scikit-learn</text>
+    <rect x="316" y="258" width="86" height="30" rx="8" fill="#13203a" stroke="#27406b"/><text x="332" y="278">Pandas</text>
+    <rect x="414" y="258" width="78" height="30" rx="8" fill="#13203a" stroke="#27406b"/><text x="430" y="278">Plotly</text>
+  </g>
+</svg>

@@ -1,0 +1,27 @@
+{
+  "name": "ayush-das-portfolio",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "description": "Dark cinematic 3D portfolio for Ayush Das — AI/ML Engineer",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+  },
+  "dependencies": {
+    "react-router-dom": "^6.28.0",
+    "gsap": "^3.12.5",
+    "lenis": "^1.1.14",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "three": "^0.160.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "gh-pages": "^6.3.0",
+    "vite": "^5.4.2"
+  }
+}
