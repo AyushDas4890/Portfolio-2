@@ -6,20 +6,32 @@
   --font-heading: 'HelveticaNowDisplay-Medium', 'Helvetica Neue', Arial, sans-serif;
   --font-body: 'HelveticaNowDisplayW01-Rg', 'Helvetica Neue', Arial, sans-serif;
 
-  /* Profile palette (see DESIGN.md): obsidian ground, blue identity, amber signal */
+  /* Profile palette: obsidian ground, blue identity, gold signal */
   --ground: #07070f;
   --identity: #60a5fa;
+  --identity-glow: rgba(96, 165, 250, 0.25);
   --signal: #f59e0b;
+  --signal-glow: rgba(245, 158, 11, 0.25);
+  --gold: #f59e0b;
+  --gold-accent: #fbbf24;
 }
 
 html,
 body {
   margin: 0;
   padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 html {
   scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 section[id] {
@@ -30,6 +42,36 @@ body {
   font-family: var(--font-body);
   background: var(--ground);
   color: #fff;
+}
+
+/* Fluid Typography Utilities for iOS & Android Screen Matching */
+.fluid-hero {
+  font-size: clamp(1.15rem, 3.8vw + 0.4rem, 1.7rem);
+  line-height: 1.38;
+}
+
+.fluid-heading {
+  font-size: clamp(1.65rem, 4.5vw + 0.4rem, 2.75rem);
+  line-height: 1.1;
+}
+
+.fluid-subheading {
+  font-size: clamp(1.15rem, 2.5vw + 0.3rem, 1.5rem);
+  line-height: 1.25;
+}
+
+.fluid-body {
+  font-size: clamp(0.92rem, 1.2vw + 0.35rem, 1.08rem);
+  line-height: 1.65;
+}
+
+/* Safe Area Insets for iOS Notch & Android Gesture Bars */
+.safe-pt {
+  padding-top: max(1rem, env(safe-area-inset-top));
+}
+
+.safe-pb {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }
 
 @keyframes blink {
