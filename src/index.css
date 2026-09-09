@@ -84,50 +84,31 @@ body {
   }
 }
 
-/* Entrance reveal — starts from a presentation value (offset + scaled down +
-   softly blurred), settles critically damped (ease-out, no overshoot). The
-   blur clearing reads as the surface "materializing" into focus. */
-.reveal {
-  opacity: 0;
-  transform: translateY(28px) scale(0.97);
-  filter: blur(6px);
-  transition:
-    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, transform, filter;
-}
-
-.reveal.in {
-  opacity: 1;
-  transform: none;
-  filter: none;
-}
-
-/* Title underline draw-in */
+/* Entrance reveals and the rule draw-in are animated by GSAP/ScrollTrigger
+   (see Sections.tsx `Reveal`) rather than CSS transitions, so timelines can
+   stagger across siblings. `.rule` keeps its transform-origin here since GSAP
+   only tweens scaleX. */
 .rule {
   transform-origin: left center;
-  transform: scaleX(0);
-  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
 }
 
-.reveal.in .rule {
-  transform: scaleX(1);
+/* Cursor-tracked glow overlay for tilt cards (see useTiltGlow.ts). Opacity and
+   --mx/--my are driven by GSAP; this just defines the visual. */
+.card-glow {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 255, 255, 0.1),
+    transparent 60%
+  );
 }
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-  .reveal {
-    transform: none;
-    filter: none;
-    transition: opacity 0.3s ease;
-    transition-delay: 0ms !important;
-  }
-  .rule {
-    transition: none;
-    transform: none;
   }
 }
 

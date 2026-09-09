@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useTypewriter } from './useTypewriter'
 import {
   About,
@@ -8,6 +8,9 @@ import {
   Work,
 } from './Sections'
 import { CaseStudies } from './CaseStudies'
+import { gsap, prefersReducedMotion } from './lib/motion'
+import { LogoMark } from './LogoMark'
+import { ScrollProgressRing } from './ScrollProgressRing'
 
 const VIDEO_SRC =
   'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260826_041744_63efcd78-bf7d-4039-99e2-2461e8a61903.mp4'
@@ -163,12 +166,36 @@ function Hamburger({ open, onClick }: { open: boolean; onClick: () => void }) {
   )
 }
 
-// Floating segmented pill nav — the active section reads as a white pill that
-// slides between items (a shared moving highlight, not a per-item toggle).
+// Floating segmented pill nav — a single white highlight div slides + resizes
+// under whichever item is active (GSAP-driven), rather than each item toggling
+// its own background.
 function PillNav({ active }: { active: string }) {
+  const railRef = useRef<HTMLDivElement>(null)
+  const highlightRef = useRef<HTMLDivElement>(null)
+  const itemRefs = useRef<Record<string, HTMLAnchorElement | null>>({})
+
+  useLayoutEffect(() => {
+    const rail = railRef.current
+    const highlight = highlightRef.current
+    const item = itemRefs.current[active]
+    if (!rail || !highlight || !item) return
+
+    const railBox = rail.getBoundingClientRect()
+    const itemBox = item.getBoundingClientRect()
+    const x = itemBox.left - railBox.left
+    const width = itemBox.width
+
+    if (prefersReducedMotion()) {
+      gsap.set(highlight, { x, width })
+      return
+    }
+    gsap.to(highlight, { x, width, duration: 0.5, ease: 'power3.out' })
+  }, [active])
+
   return (
     <div
-      className="hidden items-center gap-1 rounded-full border p-1.5 md:flex"
+      ref={railRef}
+      className="relative hidden items-center gap-1 rounded-full border p-1.5 md:flex"
       style={{
         borderColor: 'rgba(255,255,255,0.12)',
         background: 'rgba(10,10,15,0.55)',
@@ -176,17 +203,22 @@ function PillNav({ active }: { active: string }) {
         WebkitBackdropFilter: 'blur(18px) saturate(160%)',
       }}
     >
+      <div
+        ref={highlightRef}
+        className="absolute top-1.5 left-0 h-[calc(100%-0.75rem)] rounded-full bg-white"
+        style={{ willChange: 'transform, width' }}
+      />
       {SECTIONS.map((s) => {
         const isActive = active === s.id
         return (
           <a
             key={s.id}
+            ref={(el) => {
+              itemRefs.current[s.id] = el
+            }}
             href={`#${s.id}`}
             className="relative rounded-full px-4 py-1.5 text-[14px] transition-colors duration-300"
-            style={{
-              color: isActive ? '#000' : 'rgba(255,255,255,0.7)',
-              background: isActive ? '#fff' : 'transparent',
-            }}
+            style={{ color: isActive ? '#000' : 'rgba(255,255,255,0.7)' }}
           >
             {s.label}
           </a>
@@ -231,12 +263,7 @@ function Navbar({
         >
           {BRAND}
         </span>
-        <span
-          className="select-none text-[25px] text-white sm:text-[30px]"
-          style={{ letterSpacing: '-0.02em' }}
-        >
-          &#10035;&#xFE0E;
-        </span>
+        <LogoMark className="h-[20px] w-[20px] text-white sm:h-[24px] sm:w-[24px]" />
       </a>
 
       {/* Centered floating pill nav */}
@@ -244,14 +271,16 @@ function Navbar({
         <PillNav active={active} />
       </div>
 
-      <a
-        href={`mailto:${EMAIL}`}
-        className="hidden text-[16px] text-white underline underline-offset-2 transition-opacity hover:opacity-60 md:inline"
-      >
-        Get in touch
-      </a>
-
-      <Hamburger open={menuOpen} onClick={onToggleMenu} />
+      <div className="flex items-center gap-4">
+        <ScrollProgressRing />
+        <a
+          href={`mailto:${EMAIL}`}
+          className="hidden text-[16px] text-white underline underline-offset-2 transition-opacity hover:opacity-60 md:inline"
+        >
+          Get in touch
+        </a>
+        <Hamburger open={menuOpen} onClick={onToggleMenu} />
+      </div>
     </nav>
   )
 }
@@ -304,6 +333,30 @@ function CopyIcon() {
 
 function ActionPills({ visible }: { visible: boolean }) {
   const [copied, setCopied] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useLayoutEffect(() => {
+    const container = containerRef.current
+    if (!container || !visible) return
+    const items = container.querySelectorAll('.pill-item')
+
+    if (prefersReducedMotion()) {
+      gsap.set(items, { opacity: 1, y: 0, scale: 1 })
+      return
+    }
+    gsap.fromTo(
+      items,
+      { opacity: 0, y: 14, scale: 0.92 },
+      {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.55,
+        ease: 'back.out(1.6)',
+        stagger: 0.08,
+      },
+    )
+  }, [visible])
 
   const copyEmail = async () => {
     try {
@@ -316,23 +369,17 @@ function ActionPills({ visible }: { visible: boolean }) {
   }
 
   const base =
-    'inline-flex items-center justify-center rounded-full text-[13px] sm:text-[15px] min-h-[44px] px-4 sm:px-5 py-2 mx-1 mb-2 whitespace-nowrap touch-manipulation'
+    'pill-item inline-flex items-center justify-center rounded-full text-[13px] sm:text-[15px] min-h-[44px] px-4 sm:px-5 py-2 mx-1 mb-2 whitespace-nowrap touch-manipulation'
 
   return (
-    <div
-      className="flex flex-wrap gap-2 sm:gap-3"
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0)' : 'translateY(8px)',
-        transition: 'opacity 0.4s ease, transform 0.4s ease',
-      }}
-    >
+    <div ref={containerRef} className="flex flex-wrap gap-2 sm:gap-3">
       {PILLS.map((pill) => (
         <a
           key={pill.label}
           href={pill.href}
           {...(pill.external ? { target: '_blank', rel: 'noreferrer' } : {})}
           className={`${base} border border-white/20 bg-white text-black transition-all duration-200 hover:bg-[#60a5fa] hover:text-black hover:border-[#60a5fa] active:scale-[0.96] shadow-sm`}
+          style={{ opacity: visible ? undefined : 0 }}
         >
           {pill.label}
         </a>
@@ -342,6 +389,7 @@ function ActionPills({ visible }: { visible: boolean }) {
         type="button"
         onClick={copyEmail}
         className={`${base} gap-2 border border-white/40 bg-black/40 backdrop-blur-md text-white transition-all duration-200 hover:bg-white hover:text-black active:scale-[0.96] sm:gap-3`}
+        style={{ opacity: visible ? undefined : 0 }}
       >
         <span>
           Reach me:{' '}
@@ -357,10 +405,30 @@ function ActionPills({ visible }: { visible: boolean }) {
 function Hero() {
   const { displayed, done } = useTypewriter(TYPEWRITER_TEXT)
   const [pillsVisible, setPillsVisible] = useState(false)
+  const badgeRef = useRef<HTMLDivElement>(null)
+  const promptRef = useRef<HTMLParagraphElement>(null)
 
   useEffect(() => {
-    const t = setTimeout(() => setPillsVisible(true), 300)
-    return () => clearTimeout(t)
+    if (prefersReducedMotion()) {
+      setPillsVisible(true)
+      return
+    }
+    const tl = gsap.timeline({
+      onComplete: () => setPillsVisible(true),
+    })
+    tl.fromTo(
+      badgeRef.current,
+      { opacity: 0, y: -14 },
+      { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' },
+    ).fromTo(
+      promptRef.current,
+      { opacity: 0, y: 20, filter: 'blur(4px)' },
+      { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.7, ease: 'power3.out' },
+      '-=0.3',
+    )
+    return () => {
+      tl.kill()
+    }
   }, [])
 
   return (
@@ -369,12 +437,16 @@ function Hero() {
       className="relative z-[1] flex min-h-screen flex-col justify-end overflow-hidden px-5 pb-12 pt-24 sm:px-8 md:justify-center md:px-10 md:py-0"
     >
       <div className="relative z-10 max-w-xl">
-        <div className="mb-3 select-none font-mono text-[11px] uppercase tracking-[0.25em] text-[#93c5fd] sm:mb-4 sm:text-[13px]">
+        <div
+          ref={badgeRef}
+          className="mb-3 select-none font-mono text-[11px] uppercase tracking-[0.25em] text-[#93c5fd] sm:mb-4 sm:text-[13px]"
+        >
           <span className="inline-block h-2 w-2 rounded-full bg-[#f59e0b] mr-2 animate-pulse" />
           AI / ML Engineer · Generative Intelligence
         </div>
 
         <p
+          ref={promptRef}
           className="mb-6 text-white fluid-hero"
           style={{
             fontWeight: 400,
