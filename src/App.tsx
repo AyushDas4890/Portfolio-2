@@ -1,5 +1,4 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { useTypewriter } from './useTypewriter'
 import {
   About,
   Certificates,
@@ -8,9 +7,15 @@ import {
   Work,
 } from './Sections'
 import { CaseStudies } from './CaseStudies'
-import { gsap, prefersReducedMotion } from './lib/motion'
+import {
+  gsap,
+  SplitText,
+  prefersReducedMotion,
+  scrollToSection,
+} from './lib/motion'
 import { LogoMark } from './LogoMark'
 import { ScrollProgressRing } from './ScrollProgressRing'
+import { CursorFX } from './CursorFX'
 
 const VIDEO_SRC =
   'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260826_041744_63efcd78-bf7d-4039-99e2-2461e8a61903.mp4'
@@ -38,7 +43,7 @@ const PILLS = [
   { label: 'Connect on LinkedIn', href: LINKEDIN, external: true },
 ]
 
-const TYPEWRITER_TEXT =
+const HERO_TEXT =
   'I build end-to-end ML, NLP and Generative AI systems — multi-agent research pipelines, legal document intelligence, models that ship.'
 
 function BackgroundVideo() {
@@ -217,6 +222,10 @@ function PillNav({ active }: { active: string }) {
               itemRefs.current[s.id] = el
             }}
             href={`#${s.id}`}
+            onClick={(e) => {
+              e.preventDefault()
+              scrollToSection(s.id)
+            }}
             className="relative rounded-full px-4 py-1.5 text-[14px] transition-colors duration-300"
             style={{ color: isActive ? '#000' : 'rgba(255,255,255,0.7)' }}
           >
@@ -238,6 +247,7 @@ function Navbar({
   active: string
 }) {
   const [scrolled, setScrolled] = useState(false)
+  const navRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
@@ -246,17 +256,29 @@ function Navbar({
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  // Apple-style persistent nav: always frosted glass, never hidden while
+  // scrolling — only its opacity/blur intensify slightly once scrolled, for
+  // a subtle "solidify" cue rather than a disappear/reappear toggle.
   return (
     <nav
-      className="fixed top-0 left-0 z-10 flex w-full items-center justify-between px-5 py-4 sm:px-8 sm:py-5"
+      ref={navRef}
+      className="fixed top-0 left-0 z-50 flex w-full items-center justify-between px-5 py-4 sm:px-8 sm:py-5"
       style={{
-        background: scrolled ? 'rgba(10,10,15,0.45)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(16px)' : 'none',
-        WebkitBackdropFilter: scrolled ? 'blur(16px)' : 'none',
-        transition: 'background 0.4s ease, backdrop-filter 0.4s ease',
+        background: scrolled ? 'rgba(10,10,14,0.72)' : 'rgba(10,10,14,0.42)',
+        backdropFilter: `blur(${scrolled ? 20 : 16}px) saturate(180%)`,
+        WebkitBackdropFilter: `blur(${scrolled ? 20 : 16}px) saturate(180%)`,
+        borderBottom: `1px solid rgba(255,255,255,${scrolled ? 0.1 : 0.06})`,
+        transition: 'background 0.4s ease, backdrop-filter 0.4s ease, border-color 0.4s ease',
       }}
     >
-      <a href="#home" className="flex items-center gap-3">
+      <a
+        href="#home"
+        onClick={(e) => {
+          e.preventDefault()
+          scrollToSection('home')
+        }}
+        className="flex items-center gap-3"
+      >
         <span
           className="text-[21px] tracking-tight text-white sm:text-[26px]"
           style={{ fontFamily: 'var(--font-heading)' }}
@@ -298,7 +320,11 @@ function MobileOverlay({ open, onClose }: { open: boolean; onClose: () => void }
         <a
           key={s.id}
           href={`#${s.id}`}
-          onClick={onClose}
+          onClick={(e) => {
+            e.preventDefault()
+            onClose()
+            scrollToSection(s.id)
+          }}
           className="text-[32px] font-medium text-white"
         >
           {s.label}
@@ -332,8 +358,8 @@ function CopyIcon() {
 }
 
 function ActionPills({ visible }: { visible: boolean }) {
-  const [copied, setCopied] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const copiedRef = useRef<HTMLSpanElement>(null)
 
   useLayoutEffect(() => {
     const container = containerRef.current
@@ -361,8 +387,17 @@ function ActionPills({ visible }: { visible: boolean }) {
   const copyEmail = async () => {
     try {
       await navigator.clipboard.writeText(EMAIL)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1500)
+      const el = copiedRef.current
+      if (!el) return
+      if (prefersReducedMotion()) {
+        el.textContent = 'Copied!'
+        setTimeout(() => {
+          el.textContent = ''
+        }, 1500)
+        return
+      }
+      gsap.to(el, { duration: 0.4, text: 'Copied!', ease: 'none' })
+      gsap.delayedCall(1.6, () => gsap.to(el, { duration: 0.3, text: '', ease: 'none' }))
     } catch (err) {
       console.error('Clipboard write failed', err)
     }
@@ -378,6 +413,14 @@ function ActionPills({ visible }: { visible: boolean }) {
           key={pill.label}
           href={pill.href}
           {...(pill.external ? { target: '_blank', rel: 'noreferrer' } : {})}
+          onClick={
+            !pill.external && pill.href.startsWith('#') && !pill.href.startsWith('#/')
+              ? (e) => {
+                  e.preventDefault()
+                  scrollToSection(pill.href.slice(1))
+                }
+              : undefined
+          }
           className={`${base} border border-white/20 bg-white text-black transition-all duration-200 hover:bg-[#60a5fa] hover:text-black hover:border-[#60a5fa] active:scale-[0.96] shadow-sm`}
           style={{ opacity: visible ? undefined : 0 }}
         >
@@ -396,23 +439,33 @@ function ActionPills({ visible }: { visible: boolean }) {
           <span className="underline underline-offset-2 text-[#93c5fd]">{EMAIL}</span>
         </span>
         <CopyIcon />
-        {copied ? <span className="text-[11px] font-mono text-[#f59e0b]">Copied!</span> : null}
+        <span ref={copiedRef} className="text-[11px] font-mono text-[#f59e0b]" />
       </button>
     </div>
   )
 }
 
 function Hero() {
-  const { displayed, done } = useTypewriter(TYPEWRITER_TEXT)
   const [pillsVisible, setPillsVisible] = useState(false)
   const badgeRef = useRef<HTMLDivElement>(null)
+  const badgeTextRef = useRef<HTMLSpanElement>(null)
   const promptRef = useRef<HTMLParagraphElement>(null)
 
   useEffect(() => {
+    const prompt = promptRef.current
+    if (!prompt) return
+
     if (prefersReducedMotion()) {
+      gsap.set(prompt, { opacity: 1 })
       setPillsVisible(true)
       return
     }
+
+    // Chars start invisible via inline CSS below; SplitText only needs to
+    // read structure, not hide anything itself.
+    const split = new SplitText(prompt, { type: 'words,chars' })
+    gsap.set(prompt, { opacity: 1 })
+
     const tl = gsap.timeline({
       onComplete: () => setPillsVisible(true),
     })
@@ -420,14 +473,30 @@ function Hero() {
       badgeRef.current,
       { opacity: 0, y: -14 },
       { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' },
-    ).fromTo(
-      promptRef.current,
-      { opacity: 0, y: 20, filter: 'blur(4px)' },
-      { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.7, ease: 'power3.out' },
-      '-=0.3',
     )
+      .to(
+        badgeTextRef.current,
+        {
+          duration: 1,
+          scrambleText: {
+            text: 'AI / ML Engineer · Generative Intelligence',
+            chars: 'upperCase',
+            speed: 0.5,
+          },
+          ease: 'none',
+        },
+        '-=0.2',
+      )
+      .fromTo(
+        split.chars,
+        { opacity: 0, yPercent: 70 },
+        { opacity: 1, yPercent: 0, duration: 0.5, stagger: 0.012, ease: 'power2.out' },
+        '-=0.4',
+      )
+
     return () => {
       tl.kill()
+      split.revert()
     }
   }, [])
 
@@ -442,7 +511,7 @@ function Hero() {
           className="mb-3 select-none font-mono text-[11px] uppercase tracking-[0.25em] text-[#93c5fd] sm:mb-4 sm:text-[13px]"
         >
           <span className="inline-block h-2 w-2 rounded-full bg-[#f59e0b] mr-2 animate-pulse" />
-          AI / ML Engineer · Generative Intelligence
+          <span ref={badgeTextRef}>AI / ML Engineer · Generative Intelligence</span>
         </div>
 
         <p
@@ -452,15 +521,10 @@ function Hero() {
             fontWeight: 400,
             minHeight: '60px',
             textShadow: '0 2px 20px rgba(0,0,0,0.85)',
+            opacity: 0,
           }}
         >
-          {displayed}
-          {!done && (
-            <span
-              className="ml-[2px] inline-block h-[1.1em] w-[2px] bg-[#60a5fa] align-middle"
-              style={{ animation: 'blink 1s step-end infinite' }}
-            />
-          )}
+          {HERO_TEXT}
         </p>
 
         <ActionPills visible={pillsVisible} />
@@ -496,6 +560,7 @@ export default function App() {
   return (
     <>
       <BackgroundVideo />
+      <CursorFX />
       {onCaseStudies ? (
         <CaseStudies targetId={caseTarget} />
       ) : (

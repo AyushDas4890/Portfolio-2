@@ -151,6 +151,52 @@ export const PROJECTS: Project[] = [
       ],
     },
   },
+  {
+    id: '05',
+    index: '05',
+    title: 'ORCA Marine',
+    tagline: 'Grounded multi-agent reasoning for maritime safety',
+    blurb:
+      'Eight cooperating agents reason over live weather, ocean analytics, and maritime geospatial data to answer safety-critical questions like "Is it safe to fish off Chennai today?" — every answer carries a source and a timestamp, or the Controller refuses to answer.',
+    tech: ['FastAPI', 'React', 'Python', 'Open-Meteo', 'Marine Regions', 'Leaflet'],
+    github: 'https://github.com/AyushDas4890/ORCA-MARINE',
+    demo: 'https://captone2-orcin.vercel.app',
+    caseStudy: {
+      problem:
+        'A fisherman asking whether it is safe to fish today needs a grounded, evidence-backed answer, not a confident guess — marine safety is a domain where ungrounded output is actively dangerous, and key data sources like INCOIS ocean analytics and WDPA protected areas have no accessible free API.',
+      approach:
+        'Eight specialist agents — Weather, Ocean Analytics, Geospatial, Risk Assessment, Reporting, Memory, Data Discovery, and a routing Controller — sit behind one shared fetch layer. The Controller resolves intent and refuses to answer if nothing can be grounded; live data (Open-Meteo weather, Marine Regions EEZ boundaries) is used where free APIs exist, with mock fallbacks labeled inline where they do not.',
+      highlights: [
+        'One rule the whole system enforces: every response carries a source and timestamp, or the Controller refuses to answer',
+        'Live Open-Meteo weather + Marine Regions EEZ data; mock fallbacks are labeled inline, never silent',
+        'Deterministic 0–6 hazard score computed from weather, MPA proximity, and ocean analytics',
+        '28/28 tests passing — built for Smart India Hackathon 2026, ISRO problem statement 26176',
+      ],
+    },
+  },
+  {
+    id: '06',
+    index: '06',
+    title: 'RAG Medical Assistant',
+    tagline: 'Citation-grounded RAG for clinical guidelines, zero hallucination',
+    blurb:
+      'A retrieval-augmented assistant that answers only from a verified corpus of clinical guidelines — every claim carries a clickable citation back to its source chunk, plus a live confidence meter, so it says "I don\'t know" instead of inventing a dose or a source.',
+    tech: ['FastAPI', 'OpenAI', 'ChromaDB', 'gpt-4o-mini', 'Vercel'],
+    github: 'https://github.com/AyushDas4890/RAG-Medical_Assistant',
+    demo: 'https://rag-medical-assistant-five.vercel.app',
+    caseStudy: {
+      problem:
+        'Plain chatbots hallucinate — inventing drug doses and fake citations from memory, a dealbreaker in a clinical context. Typical RAG setups also tend to fail silently with a generic "unable to fetch" the moment something breaks.',
+      approach:
+        'Every answer is retrieved from a verified guideline corpus via ChromaDB and OpenAI embeddings, then grounded through gpt-4o-mini with mapped citations and a color-coded confidence meter. The frontend is served by the same FastAPI process that serves the API, so requests use relative paths and CORS failures are structurally impossible.',
+      highlights: [
+        'Every claim cites a real source chunk — click to expand the exact evidence',
+        'Color-coded confidence meter (high / medium / insufficient) instead of a false sense of certainty',
+        'Same-origin architecture: FastAPI serves the UI and the API, so "unable to fetch" can\'t happen',
+        'Auto topic discovery — the UI reads its own index and only claims to answer what it actually knows',
+      ],
+    },
+  },
 ]
 
 export interface Stat {

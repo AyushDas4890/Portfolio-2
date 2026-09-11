@@ -74,16 +74,6 @@ body {
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }
 
-@keyframes blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
-}
-
 /* Entrance reveals and the rule draw-in are animated by GSAP/ScrollTrigger
    (see Sections.tsx `Reveal`) rather than CSS transitions, so timelines can
    stagger across siblings. `.rule` keeps its transform-origin here since GSAP
@@ -125,4 +115,36 @@ body {
   .glass {
     background: #050509 !important;
   }
+}
+
+/* Custom cursor (see CursorFX.tsx) — native cursor hidden only while the
+   effect is actually running (desktop, fine pointer, motion allowed). */
+html.cursor-fx-active,
+html.cursor-fx-active * {
+  cursor: none !important;
+}
+
+.cursor-glass {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(6px) saturate(180%);
+  -webkit-backdrop-filter: blur(6px) saturate(180%);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.4),
+    0 4px 18px rgba(0, 0, 0, 0.35);
+  will-change: transform, opacity;
+}
+
+.cursor-ascii-glyph {
+  position: fixed;
+  translate: -50% -50%;
+  font-family: var(--font-body), monospace;
+  font-size: 13px;
+  color: #93c5fd;
+  text-shadow: 0 0 8px rgba(96, 165, 250, 0.7);
+  pointer-events: none;
+  will-change: transform, opacity;
 }
