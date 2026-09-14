@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import {
   ABOUT,
   CREDENTIALS,
@@ -9,24 +9,23 @@ import {
 import {
   gsap,
   ScrollTrigger,
-  MotionPathPlugin,
-  Draggable,
   SplitText,
   prefersReducedMotion,
 } from './lib/motion'
-import { useTiltGlow } from './useTiltGlow'
-import { CardFrame } from './CardFrame'
-import { type DepthCardItem } from './DepthCard'
-import { ProjectSlider } from './ProjectSlider'
 import { LetterSwap } from './LetterSwap'
+import { LollipopCarousel, type LollipopItem } from './LollipopCarousel'
+import { CertificateCoverflow, type CoverflowItem } from './CertificateCoverflow'
+import { GooeyDropdown } from './GooeyDropdown'
+import { ParticleButton } from './ParticleButton'
+import { DossierFile } from './DossierFile'
+import { SkillOrbit } from './SkillOrbit'
+import { ThreadTimeline, type ThreadNode } from './ThreadTimeline'
+import { ContactOrbit } from './ContactOrbit'
 
 // Sections sit over the fixed avatar video (rendered in App). A consistent
 // translucent scrim + light frost keeps the video visible everywhere while
 // text stays legible — the same treatment top to bottom, so no seam.
 export const SECTION_BG = 'rgba(8,8,13,0.46)'
-const CARD_BORDER = 'rgba(255,255,255,0.12)'
-const CARD_BG = 'rgba(12,12,18,0.72)'
-const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
 const PROSE_SHADOW = '0 1px 20px rgba(0,0,0,0.6)'
 const PROJECT_ACCENTS: Record<string, string> = {
   '01': '#60a5fa',
@@ -36,6 +35,57 @@ const PROJECT_ACCENTS: Record<string, string> = {
   '05': '#38bdf8',
   '06': '#fb7185',
 }
+
+const ISSUER_ACCENTS: Record<string, string> = {
+  Microsoft: '#60a5fa',
+  IBM: '#38bdf8',
+  Coursera: '#a78bfa',
+  Udemy: '#f59e0b',
+  CipherSchools: '#34d399',
+  'Infosys Springboard': '#fb7185',
+  Google: '#fbbf24',
+}
+
+const PROJECT_DOMAINS: Record<string, string[]> = {
+  genai: ['01', '05', '06'],
+  nlp: ['02'],
+  ml: ['03', '04'],
+}
+
+const WORK_FILTERS = [
+  { label: 'All projects', value: 'all' },
+  { label: 'GenAI & Agents', value: 'genai' },
+  { label: 'NLP', value: 'nlp' },
+  { label: 'ML & Data', value: 'ml' },
+]
+
+function FilterIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <path d="M4 6h16M7 12h10M10 18h4" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function escapeXml(value: string) {
+  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+// Projects without a reachable demo screenshot get generated art in the same
+// language the rest of the site uses: accent wash on obsidian, index numeral.
+function projectArt(index: string, title: string, accent: string) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+<defs><radialGradient id="g" cx="0.25" cy="0.2" r="1"><stop offset="0" stop-color="${accent}" stop-opacity="0.55"/><stop offset="0.6" stop-color="#0c0c12"/></radialGradient></defs>
+<rect width="1200" height="800" fill="#07070f"/><rect width="1200" height="800" fill="url(#g)"/>
+<text x="1160" y="360" text-anchor="end" font-family="Helvetica Neue, Arial, sans-serif" font-size="420" font-weight="700" fill="#ffffff" fill-opacity="0.08">${index}</text>
+<text x="70" y="660" font-family="Menlo, Consolas, monospace" font-size="30" fill="#ffffff" fill-opacity="0.55">${index}</text>
+<text x="70" y="730" font-family="Helvetica Neue, Arial, sans-serif" font-size="58" font-weight="600" fill="#ffffff">${escapeXml(title)}</text>
+</svg>`
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
+}
+
+const certSlug = (href: string) => href.split('/').pop()?.replace(/\.(pdf|png)$/i, '') ?? ''
+
 
 export function Reveal({
   children,
@@ -75,6 +125,8 @@ export function Reveal({
           filter: 'blur(0px)',
           duration: 0.7,
           ease: 'power3.out',
+          // A lingering filter would break backdrop-filter on glass children.
+          clearProps: 'filter',
         },
       )
       if (rulePath) {
@@ -151,8 +203,12 @@ function Section({ id, children }: { id: string; children: ReactNode }) {
   return (
     <section
       id={id}
-      className="relative w-full px-5 py-20 backdrop-blur-[2px] sm:px-8 sm:py-28 md:px-10"
-      style={{ background: SECTION_BG }}
+      className="relative w-full px-5 py-20 sm:px-8 sm:py-28 md:px-10"
+      style={{
+        // The first section after the hero fades its scrim in, so there's no
+        // hard horizontal seam where the unscrimmed hero ends.
+        background: id === 'about' ? `linear-gradient(180deg, rgba(8,8,13,0) 0px, ${SECTION_BG} 240px)` : SECTION_BG,
+      }}
     >
       <div className="w-full">{children}</div>
     </section>
@@ -266,7 +322,7 @@ export function About() {
     <Section id="about">
       <SectionHeader index="01" title="About" />
 
-      <div className="grid gap-12 md:grid-cols-[1.4fr_1fr]">
+      <div className="grid items-center gap-14 md:grid-cols-[1fr_1.1fr]">
         <div>
           <AboutBlurb text={ABOUT.blurb} />
 
@@ -282,324 +338,170 @@ export function About() {
               </Reveal>
             ))}
           </div>
-        </div>
 
-        <div className="flex flex-col gap-3">
-          {ABOUT.competencies.map((c, i) => (
-            <Reveal key={c.title} delay={i * 70}>
-              <div
-                className="rounded-xl border p-4"
-                style={{ borderColor: CARD_BORDER, background: CARD_BG }}
-              >
-                <div className="text-[15px] text-white">{c.title}</div>
-                <div className="mt-1 font-mono text-[12px] text-white/55">
-                  {c.detail}
-                </div>
-              </div>
-            </Reveal>
-          ))}
           <Reveal delay={120}>
-            <div className="mt-2 font-mono text-[12px] leading-relaxed text-white/55">
+            <div className="mt-10 font-mono text-[12px] leading-relaxed text-white/55">
               {ABOUT.education}
               <br />
               Based in {ABOUT.based}
             </div>
           </Reveal>
         </div>
+
+        <div className="relative">
+          <p className="mb-2 text-center font-mono text-[11px] uppercase tracking-[0.25em] text-white/40">
+            Stack in orbit
+          </p>
+          <SkillOrbit>
+            <DossierFile />
+          </SkillOrbit>
+        </div>
       </div>
     </Section>
   )
 }
 
-// Work is shown entirely through an infinite auto-scrolling slider of cards
-// (screenshot/gradient + title + tagline, full detail lives on the
-// case-study page each one links to) — no separate detailed grid duplicating
-// the same set of projects.
+// Work: the Lollipop strip drifts across the avatar video; hovering a capsule
+// lifts it into a focus card with the project's blurb, stack and a link to its
+// case study. A gooey dropdown filters the strip by domain.
 export function Work() {
-  const items: DepthCardItem[] = PROJECTS.map((p) => ({
-    id: p.id,
-    index: p.index,
-    title: p.title,
-    tagline: p.tagline,
-    // Screenshots only exist for demos that were actually reachable when
-    // captured — the others (asleep Streamlit app, erroring HF Space,
-    // crashed serverless function) fall back to the gradient + index-numeral
-    // treatment instead of shipping a broken loading/error screenshot.
-    image: ['02', '03', '06'].includes(p.id) ? `/project-previews/${p.id}.jpg` : undefined,
-    accent: PROJECT_ACCENTS[p.id] ?? '#60a5fa',
-  }))
+  const [domain, setDomain] = useState('all')
+
+  const items = useMemo<LollipopItem[]>(
+    () =>
+      PROJECTS.filter((p) => domain === 'all' || PROJECT_DOMAINS[domain]?.includes(p.id)).map((p) => {
+        const accent = PROJECT_ACCENTS[p.id] ?? '#60a5fa'
+        return {
+          key: p.id,
+          image: ['02', '03', '06'].includes(p.id) ? `/project-previews/${p.id}.jpg` : projectArt(p.index, p.title, accent),
+          title: p.title,
+          description: p.blurb,
+          tags: p.tech.slice(0, 4),
+          link: `#/case-studies/${p.id}`,
+          action: <ParticleButton label="Read case study →" href={`#/case-studies/${p.id}`} size="sm" />,
+        }
+      }),
+    [domain],
+  )
 
   return (
     <Section id="work">
       <SectionHeader index="02" title="Selected work" />
-      <ProjectSlider items={items} />
+      {/* z-20: the Reveal transform makes a stacking context; lift it so the
+          open dropdown panel sits above the carousel below and gets clicks. */}
+      <Reveal className="relative z-20">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+          <p className="max-w-md font-mono text-[12px] uppercase tracking-wider text-white/45">
+            Hover or tap a project · drag to browse
+          </p>
+          <GooeyDropdown label="Filter projects" icon={<FilterIcon />} options={WORK_FILTERS} value={domain} onChange={setDomain} align="right" />
+        </div>
+      </Reveal>
+      <div
+        className="relative -mx-5 h-[230px] sm:-mx-8 md:-mx-10 md:h-[clamp(420px,62vh,600px)]"
+        style={{
+          maskImage: 'linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent)',
+          WebkitMaskImage: 'linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent)',
+        }}
+      >
+        <LollipopCarousel key={domain} items={items} itemHeight={150} hoverScale={2.6} />
+      </div>
       <Reveal delay={120}>
-        <div className="mt-10">
-          <a
-            href={LINKS.github}
-            target="_blank"
-            rel="noreferrer"
-            className="font-mono text-[13px] uppercase tracking-wider text-white/70 transition-colors hover:text-white"
-          >
-            All repositories on GitHub ↗
-          </a>
+        <div className="mt-6">
+          <ParticleButton label="All repositories on GitHub ↗" href={LINKS.github} newTab variant="glass" size="sm" />
         </div>
       </Reveal>
     </Section>
   )
 }
 
-function ExperienceCard({ e }: { e: (typeof EXPERIENCE)[number] }) {
-  const tiltRef = useTiltGlow<HTMLDivElement>()
-  return (
-    <div
-      ref={tiltRef}
-      className="relative flex h-full flex-col overflow-hidden rounded-2xl p-6 sm:p-8"
-      style={{ background: CARD_BG, willChange: 'transform' }}
-    >
-      <div className="card-glow" aria-hidden />
-      <CardFrame accent="#f59e0b" />
-      <div className="mb-3 font-mono text-[12px] uppercase tracking-wider text-white/50">
-        {e.period}
-      </div>
-      <h3
-        className="mb-1 text-[19px] text-white sm:text-[21px]"
-        style={{ fontFamily: 'var(--font-heading)', lineHeight: 1.2 }}
-      >
-        {e.role}
-      </h3>
-      <div className="mb-4 text-[14px] text-white/70">
-        {e.org}
-        {e.suborg ? <span className="text-white/45"> · {e.suborg}</span> : null}
-      </div>
-      <p className="mb-6 flex-1 text-[15px] leading-relaxed text-white/70">
-        {e.description}
-      </p>
-      <a
-        href={e.certificate}
-        target="_blank"
-        rel="noreferrer"
-        className="inline-flex w-fit items-center gap-1 font-mono text-[12px] uppercase tracking-wider text-white transition-opacity hover:opacity-70"
-      >
-        View certificate ↗
-      </a>
-    </div>
-  )
+function educationArt() {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+<defs><radialGradient id="g" cx="0.3" cy="0.25" r="1"><stop offset="0" stop-color="#60a5fa" stop-opacity="0.75"/><stop offset="0.7" stop-color="#0c0c12"/></radialGradient></defs>
+<rect width="800" height="600" fill="#07070f"/><rect width="800" height="600" fill="url(#g)"/>
+<g stroke="#ffffff" stroke-width="10" stroke-linecap="round" transform="translate(400 250)"><line x1="0" y1="-70" x2="0" y2="70"/><line x1="-70" y1="0" x2="70" y2="0"/><line x1="-50" y1="-50" x2="50" y2="50"/><line x1="50" y1="-50" x2="-50" y2="50"/></g>
+<text x="400" y="440" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif" font-size="54" font-weight="600" fill="#ffffff">B.Tech · CSE</text>
+<text x="400" y="500" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="26" fill="#ffffff" fill-opacity="0.6">Lovely Professional University</text>
+</svg>`
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
 }
 
-// Wavy vertical spine (fixed viewBox, stretched non-uniformly to the track's
-// actual height) that a glowing dot travels down as the section scrolls, via
-// GSAP's MotionPathPlugin. Node markers are placed on the same path at each
-// card's progress (i / (n - 1)) using MotionPathPlugin's path-sampling utils,
-// so they stay correct regardless of how the curve is stretched.
-const SPINE_PATH_D =
-  'M12,0 C20,60 4,90 12,150 C20,210 4,240 12,300 C20,360 4,390 12,450 C20,510 4,540 12,600 C20,660 4,690 12,750 C20,810 4,840 12,900 C20,960 4,980 12,1000'
+const certThumb = (href: string) => `/certificates/thumbs/${certSlug(href)}.webp`
 
-function ExperienceSpine({ count }: { count: number }) {
-  const trackRef = useRef<HTMLDivElement>(null)
-  const pathRef = useRef<SVGPathElement>(null)
-  const dotRef = useRef<SVGCircleElement>(null)
-  const nodesRef = useRef<SVGGElement>(null)
-
-  useLayoutEffect(() => {
-    const path = pathRef.current
-    const dot = dotRef.current
-    const track = trackRef.current
-    if (!path || !dot || !track) return
-
-    const rawPath = MotionPathPlugin.getRawPath(path)
-    const nodes = nodesRef.current?.querySelectorAll<SVGCircleElement>('.spine-node')
-    nodes?.forEach((node, i) => {
-      const progress = count > 1 ? i / (count - 1) : 0
-      const { x, y } = MotionPathPlugin.getPositionOnPath(rawPath, progress)
-      node.setAttribute('cx', String(x))
-      node.setAttribute('cy', String(y))
-    })
-
-    if (prefersReducedMotion()) {
-      gsap.set(dot, { opacity: 0 })
-      return
-    }
-
-    const tween = gsap.to(dot, {
-      motionPath: {
-        path,
-        align: path,
-        alignOrigin: [0.5, 0.5],
-      },
-      ease: 'none',
-      scrollTrigger: {
-        trigger: track,
-        start: 'top 70%',
-        end: 'bottom 60%',
-        scrub: 0.6,
-      },
-    })
-    return () => {
-      tween.scrollTrigger?.kill()
-      tween.kill()
-    }
-  }, [count])
-
-  return (
-    <div
-      ref={trackRef}
-      className="pointer-events-none absolute left-1/2 top-0 hidden h-full w-6 -translate-x-1/2 md:block"
-    >
-      <svg
-        className="h-full w-full"
-        viewBox="0 0 24 1000"
-        preserveAspectRatio="none"
-        aria-hidden
-      >
-        <path
-          ref={pathRef}
-          d={SPINE_PATH_D}
-          stroke="rgba(255,255,255,0.16)"
-          strokeWidth="1.5"
-          fill="none"
-        />
-        <g ref={nodesRef}>
-          {Array.from({ length: count }, (_, i) => (
-            <circle key={i} className="spine-node" r="4" fill="rgba(255,255,255,0.4)" />
-          ))}
-        </g>
-        <circle ref={dotRef} r="6" fill="#60a5fa" style={{ filter: 'drop-shadow(0 0 6px #60a5fa)' }} />
-      </svg>
-    </div>
-  )
-}
+const TIMELINE: ThreadNode[] = [
+  {
+    key: 'btech',
+    title: 'B.Tech, Computer Science & Engineering',
+    org: 'Lovely Professional University',
+    description: `${ABOUT.focus}.`,
+    caption: 'Where it started',
+    image: educationArt(),
+  },
+  ...[...EXPERIENCE].reverse().map((e) => ({
+    key: e.role,
+    period: e.period,
+    title: e.role,
+    org: e.org,
+    suborg: e.suborg,
+    description: e.description,
+    caption: e.role.includes('Android') ? 'Shipping on Android' : 'First client sites',
+    image: certThumb(e.certificate),
+    href: e.certificate,
+  })),
+  {
+    key: 'next',
+    title: 'The journey continues',
+    description: 'Building explainable ML, NLP and generative AI systems — open to what comes next.',
+    caption: 'The journey continues',
+    image: '/project-previews/06.jpg',
+  },
+]
 
 export function ExperienceSection() {
   return (
     <Section id="experience">
       <SectionHeader index="03" title="Experience" />
-      <div className="relative">
-        <ExperienceSpine count={EXPERIENCE.length} />
-        <div className="flex flex-col gap-8 sm:gap-10">
-          {EXPERIENCE.map((e, i) => (
-            <Reveal key={e.role} delay={i * 90}>
-              <div className={`md:flex ${i % 2 === 0 ? 'md:justify-start' : 'md:justify-end'}`}>
-                <div className="md:w-[46%]">
-                  <ExperienceCard e={e} />
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </div>
+      <ThreadTimeline nodes={TIMELINE} />
     </Section>
   )
 }
 
+const ISSUERS = ['all', ...Array.from(new Set(CREDENTIALS.map((c) => c.issuer)))]
 
-function CredentialCard({ c }: { c: (typeof CREDENTIALS)[number] }) {
-  const tiltRef = useTiltGlow<HTMLAnchorElement>(6)
-  const checkRef = useRef<SVGPathElement>(null)
-
-  useLayoutEffect(() => {
-    if (checkRef.current) gsap.set(checkRef.current, { drawSVG: '0%' })
-  }, [])
-
-  return (
-    <a
-      ref={tiltRef}
-      href={c.href}
-      target="_blank"
-      rel="noreferrer"
-      draggable={false}
-      className="group relative flex h-full w-[260px] shrink-0 flex-col overflow-hidden rounded-xl p-5 sm:w-[280px]"
-      style={{
-        background: CARD_BG,
-        transition: `box-shadow 0.45s ${EASE}`,
-        willChange: 'transform',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = '0 20px 50px -22px rgba(0,0,0,0.8)'
-        const viewLabel = e.currentTarget.querySelector('.view-label')
-        if (!prefersReducedMotion() && viewLabel) {
-          gsap.to(viewLabel, {
-            duration: 0.5,
-            scrambleText: { text: 'View ↗', chars: 'upperCase', speed: 0.6 },
-            ease: 'none',
-          })
-        }
-        if (checkRef.current) {
-          gsap.to(checkRef.current, { drawSVG: '100%', duration: 0.5, ease: 'power2.out' })
-        }
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = 'none'
-        if (checkRef.current) {
-          gsap.to(checkRef.current, { drawSVG: '0%', duration: 0.35, ease: 'power2.in' })
-        }
-      }}
-    >
-      <div className="card-glow" aria-hidden />
-      <CardFrame accent="#a78bfa" />
-      <div className="mb-3 flex items-center justify-between">
-        <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-white/80">
-          {c.issuer}
-        </span>
-        <span className="view-label font-mono text-[11px] text-white/40 transition-colors group-hover:text-white/70">
-          View ↗
-        </span>
-      </div>
-      <p className="mb-4 flex-1 text-[15px] leading-snug text-white/85">{c.title}</p>
-      <svg width="20" height="20" viewBox="0 0 20 20" className="text-[#60a5fa]" aria-hidden>
-        <path
-          ref={checkRef}
-          d="M4 10.5 L8 14.5 L16 5.5"
-          stroke="currentColor"
-          strokeWidth="2"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </a>
-  )
-}
-
-// Horizontal drag-to-browse carousel (Draggable + inertia) instead of a
-// static grid — `bounds: viewport` has GSAP recompute the min/max scroll
-// range from the two elements' sizes on every drag press, so it stays
-// correct across breakpoints without a manual bounds function.
 export function Certificates() {
-  const viewportRef = useRef<HTMLDivElement>(null)
-  const trackRef = useRef<HTMLDivElement>(null)
+  const [issuer, setIssuer] = useState('all')
 
-  useLayoutEffect(() => {
-    const viewport = viewportRef.current
-    const track = trackRef.current
-    if (!viewport || !track || prefersReducedMotion()) return
+  const items = useMemo<CoverflowItem[]>(
+    () =>
+      CREDENTIALS.filter((c) => issuer === 'all' || c.issuer === issuer).map((c) => ({
+        key: `${c.issuer}-${c.title}`,
+        issuer: c.issuer,
+        title: c.title,
+        href: c.href,
+        thumb: `/certificates/thumbs/${certSlug(c.href)}.webp`,
+        accent: ISSUER_ACCENTS[c.issuer] ?? '#60a5fa',
+      })),
+    [issuer],
+  )
 
-    const instances = Draggable.create(track, {
-      type: 'x',
-      inertia: true,
-      cursor: 'grab',
-      activeCursor: 'grabbing',
-      edgeResistance: 0.8,
-      bounds: viewport,
-    })
-    return () => instances.forEach((d) => d.kill())
-  }, [])
+  const options = ISSUERS.map((value) => ({
+    value,
+    label: value === 'all' ? 'All issuers' : value,
+    hint: String(value === 'all' ? CREDENTIALS.length : CREDENTIALS.filter((c) => c.issuer === value).length),
+  }))
 
   return (
     <Section id="credentials">
       <SectionHeader index="04" title="Credentials" />
-      <div ref={viewportRef} className="overflow-hidden">
-        <div ref={trackRef} className="flex gap-4 pb-2" style={{ cursor: 'grab' }}>
-          {CREDENTIALS.map((c, i) => (
-            <Reveal key={c.issuer + c.title} delay={i * 40} className="shrink-0">
-              <CredentialCard c={c} />
-            </Reveal>
-          ))}
+      <Reveal className="relative z-20">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
+          <p className="font-mono text-[12px] uppercase tracking-wider text-white/45">
+            Drag, swipe or use ← → · click the centre card to open
+          </p>
+          <GooeyDropdown label="Filter by issuer" icon={<FilterIcon />} options={options} value={issuer} onChange={setIssuer} align="right" />
         </div>
-      </div>
-      <p className="mt-4 font-mono text-[11px] uppercase tracking-wider text-white/35">
-        Drag to browse →
-      </p>
+      </Reveal>
+      <CertificateCoverflow items={items} />
     </Section>
   )
 }
@@ -675,82 +577,227 @@ function DrawUnderline() {
   )
 }
 
+function useIstClock() {
+  const format = () =>
+    new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: 'numeric', minute: '2-digit' })
+  const [time, setTime] = useState(format)
+  useEffect(() => {
+    const id = window.setInterval(() => setTime(format()), 15_000)
+    return () => window.clearInterval(id)
+  }, [])
+  return time
+}
+
+// Heading reveal: chars rise out of a mask once the footer scrolls in.
+function ContactHeading() {
+  const ref = useRef<HTMLHeadingElement>(null)
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el || prefersReducedMotion()) return
+    const split = new SplitText(el, { type: 'chars', mask: 'chars' })
+    const tween = gsap.from(split.chars, {
+      yPercent: 110,
+      duration: 0.8,
+      ease: 'power4.out',
+      stagger: 0.025,
+      scrollTrigger: { trigger: el, start: 'top 85%', once: true },
+    })
+    return () => {
+      tween.scrollTrigger?.kill()
+      tween.kill()
+      split.revert()
+    }
+  }, [])
+  return (
+    <h2
+      ref={ref}
+      className="mb-3 text-[40px] text-white sm:text-[64px]"
+      style={{ fontFamily: 'var(--font-heading)', letterSpacing: '-0.03em', lineHeight: 1.02, textShadow: PROSE_SHADOW }}
+    >
+      something rare.
+    </h2>
+  )
+}
+
+function Field({
+  id,
+  label,
+  value,
+  onChange,
+  error,
+  multiline,
+}: {
+  id: string
+  label: string
+  value: string
+  onChange: (value: string) => void
+  error?: string
+  multiline?: boolean
+}) {
+  const common = {
+    id,
+    value,
+    placeholder: ' ',
+    'aria-invalid': Boolean(error),
+    'aria-describedby': error ? `${id}-error` : undefined,
+    className:
+      'peer w-full resize-none rounded-2xl bg-[rgba(12,12,18,0.72)] px-4 pb-2.5 pt-6 text-[15px] text-white outline-none transition-shadow duration-300 placeholder-transparent focus:shadow-[0_0_0_1px_rgba(96,165,250,0.7),0_0_24px_-6px_rgba(96,165,250,0.6)]',
+    style: { boxShadow: error ? '0 0 0 1px rgba(251,113,133,0.7)' : 'inset 0 0 0 1px rgba(255,255,255,0.12)' },
+  }
+  return (
+    <div className="relative">
+      {multiline ? (
+        <textarea {...common} rows={4} onChange={(e) => onChange(e.target.value)} />
+      ) : (
+        <input {...common} type="text" autoComplete="name" onChange={(e) => onChange(e.target.value)} />
+      )}
+      <label
+        htmlFor={id}
+        className="pointer-events-none absolute left-4 top-2 font-mono text-[10px] uppercase tracking-[0.18em] text-white/45 transition-all duration-200 peer-placeholder-shown:top-4 peer-placeholder-shown:text-[13px] peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-focus:top-2 peer-focus:text-[10px] peer-focus:uppercase peer-focus:tracking-[0.18em] peer-focus:text-[#93c5fd]"
+      >
+        {label}
+      </label>
+      {error && (
+        <p id={`${id}-error`} className="mt-1.5 font-mono text-[11px] text-[#fb7185]">
+          {error}
+        </p>
+      )}
+    </div>
+  )
+}
+
+function MessageComposer() {
+  const [name, setName] = useState('')
+  const [message, setMessage] = useState('')
+  const [errors, setErrors] = useState<{ name?: string; message?: string }>({})
+
+  const send = () => {
+    const next = {
+      name: name.trim() ? undefined : 'Tell me who you are',
+      message: message.trim() ? undefined : 'Add a short message',
+    }
+    setErrors(next)
+    if (next.name || next.message) return
+    const subject = encodeURIComponent(`Portfolio enquiry from ${name.trim()}`)
+    const body = encodeURIComponent(message.trim())
+    window.location.href = `mailto:${LINKS.email}?subject=${subject}&body=${body}`
+  }
+
+  return (
+    <form
+      noValidate
+      onSubmit={(e) => {
+        e.preventDefault()
+        send()
+      }}
+      className="mt-10 flex max-w-lg flex-col gap-3"
+      aria-label="Write to Ayush"
+    >
+      <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/45">Quick message</p>
+      <Field id="contact-name" label="Your name" value={name} onChange={setName} error={errors.name} />
+      <Field id="contact-message" label="What are you building?" value={message} onChange={setMessage} error={errors.message} multiline />
+      <div className="flex items-center gap-3">
+        <ParticleButton label="Send via email →" onClick={send} />
+        <span className="font-mono text-[11px] text-white/40">Opens your mail app</span>
+      </div>
+    </form>
+  )
+}
+
 export function Footer() {
+  const time = useIstClock()
+  const copiedRef = useRef<HTMLSpanElement>(null)
+
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(LINKS.email)
+    } catch {
+      return
+    }
+    const el = copiedRef.current
+    if (!el) return
+    if (prefersReducedMotion()) {
+      el.textContent = 'Copied ✓'
+      window.setTimeout(() => (el.textContent = 'Copy'), 1600)
+      return
+    }
+    gsap.to(el, { duration: 0.35, text: 'Copied ✓', ease: 'none' })
+    gsap.delayedCall(1.6, () => gsap.to(el, { duration: 0.3, text: 'Copy', ease: 'none' }))
+  }
+
   return (
     <footer
       id="contact"
-      className="relative w-full px-5 py-20 backdrop-blur-[2px] sm:px-8 sm:py-28 md:px-10"
+      className="relative w-full overflow-hidden px-5 py-20 sm:px-8 sm:py-28 md:px-10"
       style={{ background: SECTION_BG }}
     >
-      <div className="w-full">
-        <Reveal>
-          <div className="mb-2 flex items-center gap-3">
-            <FooterMark />
-            <p className="font-mono text-[13px] uppercase tracking-[0.2em] text-white/60">
-              Let&apos;s build
-            </p>
-          </div>
-          <h2
-            className="mb-3 text-[34px] text-white sm:text-[56px]"
-            style={{
-              fontFamily: 'var(--font-heading)',
-              letterSpacing: '-0.03em',
-              lineHeight: 1.02,
-              textShadow: PROSE_SHADOW,
-            }}
-          >
-            something rare.
-          </h2>
+      <div className="grid items-center gap-16 lg:grid-cols-[1.1fr_1fr]">
+        <div>
+          <Reveal>
+            <div className="mb-2 flex items-center gap-3">
+              <FooterMark />
+              <p className="font-mono text-[13px] uppercase tracking-[0.2em] text-white/60">Let&apos;s build</p>
+            </div>
+          </Reveal>
+          <ContactHeading />
           <DrawUnderline />
 
-          <div className="flex flex-wrap items-center gap-4">
-            <a
-              href={`mailto:${LINKS.email}`}
-              className="inline-block text-[18px] text-white underline underline-offset-4 transition-opacity hover:opacity-60 sm:text-[22px]"
-            >
-              {LINKS.email}
-            </a>
-            <a
-              href={LINKS.resume}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-white bg-white px-5 py-2 text-[14px] text-black transition-all duration-200 hover:bg-transparent hover:text-white active:scale-[0.97]"
-            >
-              Download résumé ↓
-            </a>
-          </div>
+          <Reveal delay={80}>
+            <div className="flex flex-wrap items-center gap-3">
+              <a
+                href={`mailto:${LINKS.email}`}
+                className="text-[19px] text-white underline decoration-white/30 underline-offset-[6px] transition-colors hover:decoration-[#60a5fa] sm:text-[24px]"
+              >
+                {LINKS.email}
+              </a>
+              <button
+                type="button"
+                onClick={copyEmail}
+                aria-label={`Copy ${LINKS.email}`}
+                className="rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-wider text-[#93c5fd] transition-colors hover:bg-white/10"
+                style={{ boxShadow: 'inset 0 0 0 1px rgba(147,197,253,0.35)' }}
+              >
+                <span ref={copiedRef} aria-live="polite">
+                  Copy
+                </span>
+              </button>
+            </div>
+            <div className="mt-6 flex flex-wrap items-center gap-4">
+              <ParticleButton label="Download résumé ↓" href={LINKS.resume} newTab />
+              <span className="inline-flex items-center gap-2 font-mono text-[12px] text-white/60">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-[#f59e0b]" style={{ boxShadow: '0 0 10px rgba(245,158,11,0.8)' }} />
+                Open to work · replies within 24–48h
+              </span>
+              <span className="font-mono text-[12px] tabular-nums text-white/45">{time} IST · {ABOUT.based}</span>
+            </div>
+          </Reveal>
 
-          <div className="mt-10 flex flex-wrap gap-x-8 gap-y-3 font-mono text-[13px] uppercase tracking-wider">
-            <a
-              href={LINKS.github}
-              target="_blank"
-              rel="noreferrer"
-              className="text-white/55 transition-colors hover:text-white"
-            >
-              GitHub ↗
-            </a>
-            <a
-              href={LINKS.linkedin}
-              target="_blank"
-              rel="noreferrer"
-              className="text-white/55 transition-colors hover:text-white"
-            >
-              LinkedIn ↗
-            </a>
-            <a
-              href={LINKS.portfolio}
-              target="_blank"
-              rel="noreferrer"
-              className="text-white/55 transition-colors hover:text-white"
-            >
-              Portfolio ↗
-            </a>
-          </div>
+          <Reveal delay={140}>
+            <MessageComposer />
+          </Reveal>
+        </div>
 
-          <p className="mt-16 font-mono text-[12px] text-white/40">
-            © 2026 Ayush Das
+        <div>
+          <p className="mb-2 text-center font-mono text-[11px] uppercase tracking-[0.25em] text-white/40">
+            Find me elsewhere
           </p>
-        </Reveal>
+          <ContactOrbit />
+        </div>
+      </div>
+
+      <div className="mt-16 flex flex-wrap items-center justify-between gap-4 border-t border-white/[0.08] pt-6">
+        <div className="flex flex-wrap gap-x-7 gap-y-2 font-mono text-[12px] uppercase tracking-wider">
+          {[
+            ['GitHub', LINKS.github],
+            ['LinkedIn', LINKS.linkedin],
+            ['Portfolio', LINKS.portfolio],
+          ].map(([label, href]) => (
+            <a key={label} href={href} target="_blank" rel="noreferrer" className="text-white/50 transition-colors hover:text-white">
+              {label} ↗
+            </a>
+          ))}
+        </div>
+        <p className="font-mono text-[12px] text-white/40">© 2026 Ayush Das</p>
       </div>
     </footer>
   )

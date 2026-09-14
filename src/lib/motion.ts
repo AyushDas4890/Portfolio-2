@@ -12,6 +12,7 @@ import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin'
 import { CustomEase } from 'gsap/CustomEase'
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin'
 import { TextPlugin } from 'gsap/TextPlugin'
+import { ScrollSmoother } from 'gsap/ScrollSmoother'
 
 gsap.registerPlugin(
   ScrollTrigger,
@@ -27,6 +28,7 @@ gsap.registerPlugin(
   CustomEase,
   ScrollToPlugin,
   TextPlugin,
+  ScrollSmoother,
 )
 
 // Single signature ease used across every section for continuity.
@@ -42,6 +44,7 @@ export {
   SplitText,
   DrawSVGPlugin,
   MorphSVGPlugin,
+  ScrollSmoother,
 }
 
 export function prefersReducedMotion(): boolean {
@@ -58,6 +61,11 @@ export function scrollToSection(id: string) {
   if (!target) return
   if (prefersReducedMotion()) {
     target.scrollIntoView()
+    return
+  }
+  const smoother = ScrollSmoother.get()
+  if (smoother) {
+    smoother.scrollTo(target, true, 'top 64px')
     return
   }
   gsap.to(window, {

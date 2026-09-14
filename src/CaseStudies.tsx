@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { ParticleButton } from './ParticleButton'
 import { LINKS, PROJECTS } from './content'
 import { Reveal, SECTION_BG } from './Sections'
 
@@ -99,25 +100,9 @@ export function CaseStudies({ targetId }: { targetId?: string }) {
                     </h2>
                     <p className="mt-1 text-[15px] text-white/60">{p.tagline}</p>
                   </div>
-                  <div className="flex shrink-0 gap-4 font-mono text-[12px] uppercase tracking-wider">
-                    <a
-                      href={p.github}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-white/60 transition-colors hover:text-white"
-                    >
-                      GitHub ↗
-                    </a>
-                    {p.demo && (
-                      <a
-                        href={p.demo}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-white transition-opacity hover:opacity-60"
-                      >
-                        Live ↗
-                      </a>
-                    )}
+                  <div className="flex shrink-0 flex-wrap gap-3">
+                    <ParticleButton label="GitHub ↗" href={p.github} newTab variant="glass" size="sm" />
+                    {p.demo && <ParticleButton label="Live demo ↗" href={p.demo} newTab size="sm" />}
                   </div>
                 </div>
 
@@ -179,14 +164,7 @@ export function CaseStudies({ targetId }: { targetId?: string }) {
           >
             ← Back to home
           </a>
-          <a
-            href={LINKS.resume}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-full border border-white bg-white px-5 py-2 text-[14px] text-black transition-all duration-200 hover:bg-transparent hover:text-white active:scale-[0.97]"
-          >
-            Download résumé ↓
-          </a>
+          <ParticleButton label="Download résumé ↓" href={LINKS.resume} newTab />
         </div>
       </div>
     </main>

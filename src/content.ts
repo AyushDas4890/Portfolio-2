@@ -231,14 +231,15 @@ export interface Credential {
   href: string
 }
 
+// Issuer + title as printed on each certificate file.
 export const CREDENTIALS: Credential[] = [
-  { issuer: 'Microsoft', title: 'Fundamentals of AI & ML', href: `${PF}/certificates/microsoft-ai-ml-fundamentals.pdf` },
-  { issuer: 'IBM', title: 'Python for Data Science & AI', href: `${PF}/certificates/python-for-data-science-ibm.pdf` },
-  { issuer: 'Coursera', title: 'Introduction to RAG', href: `${PF}/certificates/intro-to-rag.pdf` },
-  { issuer: 'Udemy', title: 'Master Generative AI', href: `${PF}/certificates/master-gen-ai.pdf` },
-  { issuer: 'Coursera', title: 'GenAI Apps with No-Code Tools', href: `${PF}/certificates/genai-no-code-tools.pdf` },
-  { issuer: 'IBM', title: 'ChatGPT Prompt Engineering', href: `${PF}/certificates/chatgpt-prompt-engineering.pdf` },
-  { issuer: 'IBM', title: 'ChatGPT Essentials', href: `${PF}/certificates/chatgpt-essentials.pdf` },
-  { issuer: 'CipherSchools', title: 'Data Science', href: `${PF}/certificates/data-science-cipherschools.pdf` },
-  { issuer: 'Coursera', title: 'Python Essentials', href: `${PF}/certificates/coursera-python.pdf` },
+  { issuer: 'Microsoft', title: 'Foundations of AI and Machine Learning', href: `${PF}/certificates/microsoft-ai-ml-fundamentals.pdf` },
+  { issuer: 'IBM', title: 'Python for Data Science and AI', href: `${PF}/certificates/python-for-data-science-ibm.pdf` },
+  { issuer: 'Coursera', title: 'Introduction to Retrieval Augmented Generation (RAG)', href: `${PF}/certificates/intro-to-rag.pdf` },
+  { issuer: 'Udemy', title: 'Master Generative AI & Generative AI Tools', href: `${PF}/certificates/master-gen-ai.pdf` },
+  { issuer: 'Infosys Springboard', title: 'Build Generative AI Apps with No-Code Tools', href: `${PF}/certificates/genai-no-code-tools.pdf` },
+  { issuer: 'Infosys Springboard', title: 'ChatGPT-4 Prompt Engineering', href: `${PF}/certificates/chatgpt-prompt-engineering.pdf` },
+  { issuer: 'Udemy', title: 'ChatGPT Made Easy: AI Essentials', href: `${PF}/certificates/chatgpt-essentials.pdf` },
+  { issuer: 'CipherSchools', title: 'A Guide to Machine Learning with Data Science', href: `${PF}/certificates/data-science-cipherschools.pdf` },
+  { issuer: 'Google', title: 'Crash Course on Python', href: `${PF}/certificates/coursera-python.pdf` },
 ]

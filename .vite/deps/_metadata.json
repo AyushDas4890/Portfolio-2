@@ -1,0 +1,136 @@
+{
+  "hash": "9d56a7d8",
+  "configHash": "5bb69d51",
+  "lockfileHash": "5778d438",
+  "browserHash": "234dc9fa",
+  "optimized": {
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "7ff07485",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "0aa562a6",
+      "needsInterop": true
+    },
+    "gsap": {
+      "src": "../../node_modules/gsap/index.js",
+      "file": "gsap.js",
+      "fileHash": "20dee802",
+      "needsInterop": false
+    },
+    "gsap/ScrollTrigger": {
+      "src": "../../node_modules/gsap/ScrollTrigger.js",
+      "file": "gsap_ScrollTrigger.js",
+      "fileHash": "1f39d5e7",
+      "needsInterop": false
+    },
+    "gsap/MotionPathPlugin": {
+      "src": "../../node_modules/gsap/MotionPathPlugin.js",
+      "file": "gsap_MotionPathPlugin.js",
+      "fileHash": "16d9a5b8",
+      "needsInterop": false
+    },
+    "gsap/Flip": {
+      "src": "../../node_modules/gsap/Flip.js",
+      "file": "gsap_Flip.js",
+      "fileHash": "1edb98e5",
+      "needsInterop": false
+    },
+    "gsap/Draggable": {
+      "src": "../../node_modules/gsap/Draggable.js",
+      "file": "gsap_Draggable.js",
+      "fileHash": "d7d577ba",
+      "needsInterop": false
+    },
+    "gsap/InertiaPlugin": {
+      "src": "../../node_modules/gsap/InertiaPlugin.js",
+      "file": "gsap_InertiaPlugin.js",
+      "fileHash": "a550a299",
+      "needsInterop": false
+    },
+    "gsap/Observer": {
+      "src": "../../node_modules/gsap/Observer.js",
+      "file": "gsap_Observer.js",
+      "fileHash": "7273110f",
+      "needsInterop": false
+    },
+    "gsap/SplitText": {
+      "src": "../../node_modules/gsap/SplitText.js",
+      "file": "gsap_SplitText.js",
+      "fileHash": "65e06302",
+      "needsInterop": false
+    },
+    "gsap/ScrambleTextPlugin": {
+      "src": "../../node_modules/gsap/ScrambleTextPlugin.js",
+      "file": "gsap_ScrambleTextPlugin.js",
+      "fileHash": "11403926",
+      "needsInterop": false
+    },
+    "gsap/DrawSVGPlugin": {
+      "src": "../../node_modules/gsap/DrawSVGPlugin.js",
+      "file": "gsap_DrawSVGPlugin.js",
+      "fileHash": "019155bb",
+      "needsInterop": false
+    },
+    "gsap/MorphSVGPlugin": {
+      "src": "../../node_modules/gsap/MorphSVGPlugin.js",
+      "file": "gsap_MorphSVGPlugin.js",
+      "fileHash": "c0019039",
+      "needsInterop": false
+    },
+    "gsap/CustomEase": {
+      "src": "../../node_modules/gsap/CustomEase.js",
+      "file": "gsap_CustomEase.js",
+      "fileHash": "2d4af844",
+      "needsInterop": false
+    },
+    "gsap/ScrollToPlugin": {
+      "src": "../../node_modules/gsap/ScrollToPlugin.js",
+      "file": "gsap_ScrollToPlugin.js",
+      "fileHash": "35b02e17",
+      "needsInterop": false
+    },
+    "gsap/TextPlugin": {
+      "src": "../../node_modules/gsap/TextPlugin.js",
+      "file": "gsap_TextPlugin.js",
+      "fileHash": "9a1e44b4",
+      "needsInterop": false
+    },
+    "framer-motion": {
+      "src": "../../node_modules/framer-motion/dist/es/index.mjs",
+      "file": "framer-motion.js",
+      "fileHash": "0067bcbc",
+      "needsInterop": false
+    },
+    "three": {
+      "src": "../../node_modules/three/build/three.module.js",
+      "file": "three.js",
+      "fileHash": "f2ef4f58",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-HRUC54IL": {
+      "file": "chunk-HRUC54IL.js"
+    },
+    "chunk-P5PVDEGM": {
+      "file": "chunk-P5PVDEGM.js"
+    },
+    "chunk-FS6FCKKJ": {
+      "file": "chunk-FS6FCKKJ.js"
+    },
+    "chunk-ZUJEPU2N": {
+      "file": "chunk-ZUJEPU2N.js"
+    },
+    "chunk-KPR3CL7S": {
+      "file": "chunk-KPR3CL7S.js"
+    },
+    "chunk-G3PMV62Z": {
+      "file": "chunk-G3PMV62Z.js"
+    }
+  }
+}

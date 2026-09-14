@@ -32,7 +32,7 @@ export function CursorFX() {
       setGlassX(e.clientX)
       setGlassY(e.clientY)
 
-      const overHero = (e.target as HTMLElement | null)?.closest('#home')
+      const overHero = (e.target as HTMLElement | null)?.closest('#home, #intro')
       gsap.to(glass, { opacity: overHero ? 0 : 1, duration: 0.25, overwrite: 'auto' })
 
       if (!overHero) return

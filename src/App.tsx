@@ -9,16 +9,24 @@ import {
 import { CaseStudies } from './CaseStudies'
 import {
   gsap,
+  ScrollTrigger,
   SplitText,
   prefersReducedMotion,
   scrollToSection,
 } from './lib/motion'
 import { LogoMark } from './LogoMark'
-import { ScrollProgressRing } from './ScrollProgressRing'
+import { MinimalNav } from './MinimalNav'
+import { IntroReveal } from './IntroReveal'
+import { SmoothScroll } from './SmoothScroll'
 import { CursorFX } from './CursorFX'
+import { ParticleButton } from './ParticleButton'
+import { DynamicInfo } from './DynamicInfo'
+import { LINKS } from './content'
 
-const VIDEO_SRC =
-  'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260826_041744_63efcd78-bf7d-4039-99e2-2461e8a61903.mp4'
+// H.264, every frame a keyframe: plays in every browser (the original HEVC
+// encode failed in Firefox and many Chrome setups) and seeks instantly, which
+// keeps the cursor-driven head turn smooth.
+const VIDEO_SRC = '/avatar-head.mp4'
 
 const BRAND = 'Ayush Das'
 const EMAIL = 'das.ayush4890@gmail.com'
@@ -34,7 +42,7 @@ const SECTIONS = [
   { id: 'credentials', label: 'Credentials' },
   { id: 'contact', label: 'Contact' },
 ]
-const SECTION_IDS = SECTIONS.map((s) => s.id)
+const SECTION_IDS = ['intro', ...SECTIONS.map((s) => s.id)]
 
 const PILLS = [
   { label: 'See the work', href: '#work', external: false },
@@ -99,261 +107,76 @@ function BackgroundVideo() {
   }, [])
 
   return (
-    <>
+    <div id="bg-video" className="pointer-events-none fixed inset-0 z-0" style={{ willChange: 'clip-path' }}>
       <video
         ref={videoRef}
         src={VIDEO_SRC}
         muted
         playsInline
         preload="auto"
-        className="fixed inset-0 z-0 h-full w-full"
+        className="absolute inset-0 h-full w-full"
         style={{ objectFit: 'cover', objectPosition: '70% center' }}
       />
       {/* Light, mostly-even scrim so the avatar stays visible across the whole
           page, with a touch more darkness on the left for hero legibility. */}
       <div
-        className="pointer-events-none fixed inset-0 z-0"
+        className="absolute inset-0"
         style={{
           background:
             'linear-gradient(90deg, rgba(7,7,15,0.7) 0%, rgba(7,7,15,0.35) 45%, rgba(7,7,15,0.15) 100%)',
         }}
       />
-    </>
+    </div>
   )
 }
 
 // Highlights the nav item for whichever section is crossing the viewport middle.
+// Highlights the nav item for whichever section has crossed the upper-middle of
+// the viewport. Polled on the GSAP ticker (a few times a second) rather than via
+// scroll events or IntersectionObserver: ScrollSmoother keeps easing content
+// after the last native scroll event, and sections mount after this hook runs.
 function useScrollSpy(ids: string[]) {
-  const [active, setActive] = useState(ids[0])
+  const [active, setActive] = useState('home')
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) setActive(entry.target.id)
-        }
-      },
-      { rootMargin: '-45% 0px -50% 0px', threshold: 0 },
-    )
-
-    for (const id of ids) {
-      const el = document.getElementById(id)
-      if (el) observer.observe(el)
+    let frame = 0
+    const check = () => {
+      frame = (frame + 1) % 6
+      if (frame) return
+      const line = window.innerHeight * 0.45
+      let current = 'home'
+      for (const id of ids) {
+        const el = document.getElementById(id)
+        if (el && el.getBoundingClientRect().top <= line) current = id === 'intro' ? 'home' : id
+      }
+      setActive(current)
     }
-    return () => observer.disconnect()
+    gsap.ticker.add(check)
+    return () => gsap.ticker.remove(check)
   }, [ids])
 
   return active
 }
 
-function Hamburger({ open, onClick }: { open: boolean; onClick: () => void }) {
-  const bar = 'block w-6 h-[2px] bg-white transition-all duration-300'
+function Brand() {
   return (
-    <button
-      type="button"
-      aria-label="Toggle menu"
-      onClick={onClick}
-      className="flex flex-col md:hidden"
-      style={{ gap: '5px' }}
+    <a
+      href="#home"
+      data-chrome
+      onClick={(e) => {
+        e.preventDefault()
+        scrollToSection('home')
+      }}
+      className="fixed left-5 top-5 z-50 hidden items-center gap-3 sm:left-8 sm:top-6 md:flex"
     >
       <span
-        className={bar}
-        style={open ? { transform: 'translateY(7px) rotate(45deg)' } : undefined}
-      />
-      <span className={bar} style={open ? { opacity: 0 } : undefined} />
-      <span
-        className={bar}
-        style={
-          open ? { transform: 'translateY(-7px) rotate(-45deg)' } : undefined
-        }
-      />
-    </button>
-  )
-}
-
-// Floating segmented pill nav — a single white highlight div slides + resizes
-// under whichever item is active (GSAP-driven), rather than each item toggling
-// its own background.
-function PillNav({ active }: { active: string }) {
-  const railRef = useRef<HTMLDivElement>(null)
-  const highlightRef = useRef<HTMLDivElement>(null)
-  const itemRefs = useRef<Record<string, HTMLAnchorElement | null>>({})
-
-  useLayoutEffect(() => {
-    const rail = railRef.current
-    const highlight = highlightRef.current
-    const item = itemRefs.current[active]
-    if (!rail || !highlight || !item) return
-
-    const railBox = rail.getBoundingClientRect()
-    const itemBox = item.getBoundingClientRect()
-    const x = itemBox.left - railBox.left
-    const width = itemBox.width
-
-    if (prefersReducedMotion()) {
-      gsap.set(highlight, { x, width })
-      return
-    }
-    gsap.to(highlight, { x, width, duration: 0.5, ease: 'power3.out' })
-  }, [active])
-
-  return (
-    <div
-      ref={railRef}
-      className="relative hidden items-center gap-1 rounded-full border p-1.5 md:flex"
-      style={{
-        borderColor: 'rgba(255,255,255,0.12)',
-        background: 'rgba(10,10,15,0.55)',
-        backdropFilter: 'blur(18px) saturate(160%)',
-        WebkitBackdropFilter: 'blur(18px) saturate(160%)',
-      }}
-    >
-      <div
-        ref={highlightRef}
-        className="absolute top-1.5 left-0 h-[calc(100%-0.75rem)] rounded-full bg-white"
-        style={{ willChange: 'transform, width' }}
-      />
-      {SECTIONS.map((s) => {
-        const isActive = active === s.id
-        return (
-          <a
-            key={s.id}
-            ref={(el) => {
-              itemRefs.current[s.id] = el
-            }}
-            href={`#${s.id}`}
-            onClick={(e) => {
-              e.preventDefault()
-              scrollToSection(s.id)
-            }}
-            className="relative rounded-full px-4 py-1.5 text-[14px] transition-colors duration-300"
-            style={{ color: isActive ? '#000' : 'rgba(255,255,255,0.7)' }}
-          >
-            {s.label}
-          </a>
-        )
-      })}
-    </div>
-  )
-}
-
-function Navbar({
-  onToggleMenu,
-  menuOpen,
-  active,
-}: {
-  onToggleMenu: () => void
-  menuOpen: boolean
-  active: string
-}) {
-  const [scrolled, setScrolled] = useState(false)
-  const navRef = useRef<HTMLElement>(null)
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  // Apple-style persistent nav: always frosted glass, never hidden while
-  // scrolling — only its opacity/blur intensify slightly once scrolled, for
-  // a subtle "solidify" cue rather than a disappear/reappear toggle.
-  return (
-    <nav
-      ref={navRef}
-      className="fixed top-0 left-0 z-50 flex w-full items-center justify-between px-5 py-4 sm:px-8 sm:py-5"
-      style={{
-        background: scrolled ? 'rgba(10,10,14,0.72)' : 'rgba(10,10,14,0.42)',
-        backdropFilter: `blur(${scrolled ? 20 : 16}px) saturate(180%)`,
-        WebkitBackdropFilter: `blur(${scrolled ? 20 : 16}px) saturate(180%)`,
-        borderBottom: `1px solid rgba(255,255,255,${scrolled ? 0.1 : 0.06})`,
-        transition: 'background 0.4s ease, backdrop-filter 0.4s ease, border-color 0.4s ease',
-      }}
-    >
-      <a
-        href="#home"
-        onClick={(e) => {
-          e.preventDefault()
-          scrollToSection('home')
-        }}
-        className="flex items-center gap-3"
+        className="text-[21px] tracking-tight text-white sm:text-[24px]"
+        style={{ fontFamily: 'var(--font-heading)', textShadow: '0 2px 16px rgba(0,0,0,0.6)' }}
       >
-        <span
-          className="text-[21px] tracking-tight text-white sm:text-[26px]"
-          style={{ fontFamily: 'var(--font-heading)' }}
-        >
-          {BRAND}
-        </span>
-        <LogoMark className="h-[20px] w-[20px] text-white sm:h-[24px] sm:w-[24px]" />
-      </a>
-
-      {/* Centered floating pill nav */}
-      <div className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 md:block">
-        <PillNav active={active} />
-      </div>
-
-      <div className="flex items-center gap-4">
-        <ScrollProgressRing />
-        <a
-          href={`mailto:${EMAIL}`}
-          className="hidden text-[16px] text-white underline underline-offset-2 transition-opacity hover:opacity-60 md:inline"
-        >
-          Get in touch
-        </a>
-        <Hamburger open={menuOpen} onClick={onToggleMenu} />
-      </div>
-    </nav>
-  )
-}
-
-function MobileOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {
-  return (
-    <div
-      className="fixed inset-0 z-[9] flex flex-col justify-center gap-8 bg-black/90 px-8 backdrop-blur-md transition-opacity duration-300 md:hidden"
-      style={{
-        opacity: open ? 1 : 0,
-        pointerEvents: open ? 'auto' : 'none',
-      }}
-    >
-      {SECTIONS.map((s) => (
-        <a
-          key={s.id}
-          href={`#${s.id}`}
-          onClick={(e) => {
-            e.preventDefault()
-            onClose()
-            scrollToSection(s.id)
-          }}
-          className="text-[32px] font-medium text-white"
-        >
-          {s.label}
-        </a>
-      ))}
-      <a
-        href={`mailto:${EMAIL}`}
-        onClick={onClose}
-        className="text-[32px] font-medium text-white underline underline-offset-2"
-      >
-        Get in touch
-      </a>
-    </div>
-  )
-}
-
-function CopyIcon() {
-  return (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 12 12"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <rect x="3.5" y="3.5" width="7" height="7" rx="1" stroke="currentColor" />
-      <rect x="1.5" y="1.5" width="7" height="7" rx="1" stroke="currentColor" />
-    </svg>
+        {BRAND}
+      </span>
+      <LogoMark className="h-[20px] w-[20px] text-white" />
+    </a>
   )
 }
 
@@ -403,44 +226,36 @@ function ActionPills({ visible }: { visible: boolean }) {
     }
   }
 
-  const base =
-    'pill-item inline-flex items-center justify-center rounded-full text-[13px] sm:text-[15px] min-h-[44px] px-4 sm:px-5 py-2 mx-1 mb-2 whitespace-nowrap touch-manipulation'
-
   return (
     <div ref={containerRef} className="flex flex-wrap gap-2 sm:gap-3">
-      {PILLS.map((pill) => (
-        <a
-          key={pill.label}
-          href={pill.href}
-          {...(pill.external ? { target: '_blank', rel: 'noreferrer' } : {})}
-          onClick={
-            !pill.external && pill.href.startsWith('#') && !pill.href.startsWith('#/')
-              ? (e) => {
-                  e.preventDefault()
-                  scrollToSection(pill.href.slice(1))
-                }
-              : undefined
-          }
-          className={`${base} border border-white/20 bg-white text-black transition-all duration-200 hover:bg-[#60a5fa] hover:text-black hover:border-[#60a5fa] active:scale-[0.96] shadow-sm`}
-          style={{ opacity: visible ? undefined : 0 }}
-        >
-          {pill.label}
-        </a>
-      ))}
+      {PILLS.map((pill) => {
+        const inPage = !pill.external && pill.href.startsWith('#') && !pill.href.startsWith('#/')
+        return (
+          <div
+            key={pill.label}
+            className="pill-item mx-1 mb-2"
+            style={{ opacity: visible ? undefined : 0 }}
+          >
+            <ParticleButton
+              label={pill.label}
+              href={inPage ? undefined : pill.href}
+              newTab={pill.external}
+              onClick={inPage ? () => scrollToSection(pill.href.slice(1)) : undefined}
+              particleColor="#60a5fa"
+            />
+          </div>
+        )
+      })}
 
-      <button
-        type="button"
-        onClick={copyEmail}
-        className={`${base} gap-2 border border-white/40 bg-black/40 backdrop-blur-md text-white transition-all duration-200 hover:bg-white hover:text-black active:scale-[0.96] sm:gap-3`}
-        style={{ opacity: visible ? undefined : 0 }}
-      >
-        <span>
-          Reach me:{' '}
-          <span className="underline underline-offset-2 text-[#93c5fd]">{EMAIL}</span>
-        </span>
-        <CopyIcon />
-        <span ref={copiedRef} className="text-[11px] font-mono text-[#f59e0b]" />
-      </button>
+      <div className="pill-item mx-1 mb-2 flex items-center gap-2" style={{ opacity: visible ? undefined : 0 }}>
+        <ParticleButton
+          label={`Reach me: ${EMAIL}`}
+          ariaLabel={`Copy email address ${EMAIL}`}
+          variant="glass"
+          onClick={copyEmail}
+        />
+        <span ref={copiedRef} aria-live="polite" className="font-mono text-[11px] text-[#f59e0b]" />
+      </div>
     </div>
   )
 }
@@ -450,6 +265,7 @@ function Hero() {
   const badgeRef = useRef<HTMLDivElement>(null)
   const badgeTextRef = useRef<HTMLSpanElement>(null)
   const promptRef = useRef<HTMLParagraphElement>(null)
+  const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     const prompt = promptRef.current
@@ -466,7 +282,12 @@ function Hero() {
     const split = new SplitText(prompt, { type: 'words,chars' })
     gsap.set(prompt, { opacity: 1 })
 
+    gsap.set(badgeRef.current, { opacity: 0 })
+    gsap.set(split.chars, { opacity: 0 })
+    // Plays as the hero rises out of the intro reveal, not on mount — on first
+    // load the hero is ~2 screens below the pinned intro.
     const tl = gsap.timeline({
+      paused: true,
       onComplete: () => setPillsVisible(true),
     })
     tl.fromTo(
@@ -494,7 +315,15 @@ function Hero() {
         '-=0.4',
       )
 
+    const trigger = ScrollTrigger.create({
+      trigger: sectionRef.current,
+      start: 'top 70%',
+      once: true,
+      onEnter: () => tl.play(),
+    })
+
     return () => {
+      trigger.kill()
       tl.kill()
       split.revert()
     }
@@ -502,8 +331,12 @@ function Hero() {
 
   return (
     <section
+      ref={sectionRef}
       id="home"
       className="relative z-[1] flex min-h-screen flex-col justify-end overflow-hidden px-5 pb-12 pt-24 sm:px-8 md:justify-center md:px-10 md:py-0"
+      // Pulled up over the end of the pinned intro so the hero rises in while
+      // the window finishes opening, instead of after a blank screen.
+      style={prefersReducedMotion() ? undefined : { marginTop: '-100vh' }}
     >
       <div className="relative z-10 max-w-xl">
         <div
@@ -548,7 +381,6 @@ function useHashRoute() {
 }
 
 export default function App() {
-  const [menuOpen, setMenuOpen] = useState(false)
   const active = useScrollSpy(SECTION_IDS)
   const hash = useHashRoute()
 
@@ -565,13 +397,20 @@ export default function App() {
         <CaseStudies targetId={caseTarget} />
       ) : (
         <>
-          <Navbar
-            menuOpen={menuOpen}
-            onToggleMenu={() => setMenuOpen((o) => !o)}
-            active={active}
+          <Brand />
+          <MinimalNav sections={SECTIONS} active={active} />
+          <DynamicInfo
+            name={BRAND}
+            role="AI / ML Engineer"
+            initials="AD"
+            image="/avatar.jpg"
+            github={LINKS.github}
+            linkedin={LINKS.linkedin}
+            email={LINKS.email}
           />
-          <MobileOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />
+          <SmoothScroll>
           <main className="relative z-[1]">
+            <IntroReveal />
             <Hero />
             <About />
             <Work />
@@ -579,6 +418,7 @@ export default function App() {
             <Certificates />
             <Footer />
           </main>
+          </SmoothScroll>
         </>
       )}
     </>
