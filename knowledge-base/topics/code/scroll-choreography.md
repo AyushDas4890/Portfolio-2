@@ -3,7 +3,7 @@ id: 20260712-scroll-choreography
 title: Scroll choreography
 tags: [code]
 created: 2026-07-12
-updated: 2026-07-12
+updated: 2026-09-24
 related: [20260712-hero-ring, 20260712-architecture]
 summary: Lenis + ScrollTrigger wiring, stage object, mask reveals, tilt/sweep/parallax, reduced-motion.
 ---
@@ -33,3 +33,15 @@ Sections use `.act-solid` gradient background (transparent → solid → transpa
 - `document.fonts.ready.then(() => ScrollTrigger.refresh())` in App — Fraunces shifts metrics.
 - Lenis swallows anchor jumps: use `scrollToSection`, not `href="#id"`.
 - Headless verification: anchors don't scroll; use puppeteer-core `window.scrollTo` (see cowork-sandbox-quirks).
+
+## anime.js scrubbed sections (2026-09-24)
+- Below-hero sections use `useScrollAnime(ref, build, {start, end})` in `src/lib/scrollAnime.ts`: anime.js v4 timeline (paused), progress driven by a ScrollTrigger. Don't switch to anime's `onScroll` — ScrollSmoother moves content by transform, so native scroll position leads the visuals.
+- Rule: `ref` is the trigger and must not be animated by its own timeline; animate descendants (a trigger measured with its own transform drifts).
+- `Section` in `Sections.tsx`: `.section-in` (entrance) inside `.section-out` (exit), two timelines on separate elements so their transforms don't fight.
+- Never animate the same element's transform from both GSAP and anime.
+- `src/BorderBeam.tsx` is Lightswind's border-beam, vendored (Lightswind's `add` CLI rewrites tsconfig/vite/tailwind configs — fetch in a scratch dir instead).
+- `.npmrc` has `legacy-peer-deps=true`: lightswind peers framer-motion ≤12, project is on 13.
+- `src/DepthTunnel.tsx` (between IntroReveal and Hero): pinned 3D flight, `useScrollAnime(..., { pin: true, end: '+=500%' })`. anime animates `.tunnel-world` translateZ/rotateZ (camera) and per-stage opacity; stages sit at `-(i+1)*GAP` px, counter-rotated by `TWIST*(i+1)` so each word is upright on arrival; consecutive stages crossfade. Stage containers get opacity, so they are flattened (no 3D inside a stage) by design. Returns null under reduced motion. Pointer tilt uses anime `createAnimatable` on a separate wrapper.
+- Order/overlaps: IntroReveal pins `+=130%` (clip fully open at ~92% of it). Tunnel wrapper has `marginTop: -100vh`, so its pin starts as the intro pin ends; it is transparent at both ends; in between an opaque `.tunnel-backdrop` (near-black maroon, red→amber core glow, scroll-rotated conic light streaks) hides the avatar video, plus a warm vignette, and its last ~20% is a clear tail. Hero keeps `marginTop: -100vh`, so it rises in over that clear tail. About keeps its top scrim fade (follows the unscrimmed hero). Hero copy scale-fades (GSAP scrub) as it scrolls on to About.
+- Palette is warm site-wide (2026-09-24): accents `#f87171` (red) / `#fdba74` (light amber) / `#f59e0b` (amber) replaced the old blues. Below the hero, `src/SpaceBackdrop.tsx` (fixed `#space-bg`, outside SmoothScroll) fades the tunnel's backdrop in over the avatar video; its fade/spin is started from About via `useSpaceBackdrop('about')` because that trigger only exists once SmoothScroll children mount.
+- About blurb: word-by-word scrubbed opacity (anime stagger), keywords in amber. Work keeps the LollipopCarousel (a pinned 3D rail was tried and rejected by the user); the strip opens via an anime clip-path scrub, and filter changes crossfade two strips with framer-motion AnimatePresence (sync mode, both absolute). Contact: GSAP velocity marquee (timeScale + skewX from ScrollTrigger velocity, decays on the ticker).

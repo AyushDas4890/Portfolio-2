@@ -192,7 +192,7 @@ export function CertificateCoverflow({ items }: { items: CoverflowItem[] }) {
             window.open(current.href, '_blank', 'noopener,noreferrer')
           }
         }}
-        className="relative w-full select-none overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-[#60a5fa]/60"
+        className="relative w-full select-none overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-[#f87171]/60"
         style={{
           height: cardHeight + 96,
           perspective: 1400,

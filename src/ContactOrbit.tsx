@@ -45,7 +45,7 @@ const ITEMS: OrbitItem[] = [
   {
     key: 'email',
     label: 'Email',
-    color: '#60a5fa',
+    color: '#f87171',
     depth: 0.5,
     href: `mailto:${LINKS.email}`,
     icon: (
@@ -176,7 +176,7 @@ function OrbitButton({
           {item.action === 'copy' && copied ? 'Copied!' : item.label}
         </span>
         {item.action === 'copy' ? (
-          <button type="button" aria-label={copied ? 'Email copied' : `Copy ${LINKS.email}`} onClick={onCopy} className="block rounded-full outline-none focus-visible:ring-2 focus-visible:ring-[#60a5fa]">
+          <button type="button" aria-label={copied ? 'Email copied' : `Copy ${LINKS.email}`} onClick={onCopy} className="block rounded-full outline-none focus-visible:ring-2 focus-visible:ring-[#f87171]">
             {button}
           </button>
         ) : (
@@ -184,7 +184,7 @@ function OrbitButton({
             href={item.href}
             aria-label={item.label}
             {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}
-            className="block rounded-full outline-none focus-visible:ring-2 focus-visible:ring-[#60a5fa]"
+            className="block rounded-full outline-none focus-visible:ring-2 focus-visible:ring-[#f87171]"
           >
             {button}
           </a>
@@ -312,7 +312,7 @@ export function ContactOrbit() {
         <div
           aria-hidden
           className="pointer-events-none absolute inset-[12%] rounded-full"
-          style={{ background: 'radial-gradient(closest-side, rgba(96,165,250,0.22), transparent)', filter: 'blur(10px)' }}
+          style={{ background: 'radial-gradient(closest-side, rgba(248,113,113,0.22), transparent)', filter: 'blur(10px)' }}
         />
         <div ref={planeRef} className="relative h-full w-full" style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}>
           {/* orbit guides */}
@@ -359,7 +359,7 @@ export function ContactOrbit() {
                     key={ring}
                     aria-hidden
                     className="absolute inset-0 rounded-full"
-                    style={{ boxShadow: '0 0 0 1px rgba(96,165,250,0.6)' }}
+                    style={{ boxShadow: '0 0 0 1px rgba(248,113,113,0.6)' }}
                     animate={{ scale: [1, 1.9], opacity: [0.6, 0] }}
                     transition={{ duration: 2.2, repeat: Infinity, ease: 'easeOut', delay: ring * 1.1 }}
                   />
@@ -373,10 +373,10 @@ export function ContactOrbit() {
               onClick={() => setOpen((o) => !o)}
               whileHover={{ scale: 1.06 }}
               whileTap={{ scale: 0.94 }}
-              className="relative flex h-[88px] w-[88px] items-center justify-center rounded-full text-white outline-none focus-visible:ring-2 focus-visible:ring-[#60a5fa]"
+              className="relative flex h-[88px] w-[88px] items-center justify-center rounded-full text-white outline-none focus-visible:ring-2 focus-visible:ring-[#f87171]"
               style={{
-                background: 'radial-gradient(circle at 32% 26%, #bfdbfe 0%, #60a5fa 28%, #1e3a8a 100%)',
-                boxShadow: 'inset 0 2px 2px rgba(255,255,255,0.5), inset 0 -10px 20px rgba(0,0,0,0.35), 0 20px 40px -12px rgba(0,0,0,0.8), 0 0 36px rgba(96,165,250,0.45)',
+                background: 'radial-gradient(circle at 32% 26%, #bfdbfe 0%, #f87171 28%, #1e3a8a 100%)',
+                boxShadow: 'inset 0 2px 2px rgba(255,255,255,0.5), inset 0 -10px 20px rgba(0,0,0,0.35), 0 20px 40px -12px rgba(0,0,0,0.8), 0 0 36px rgba(248,113,113,0.45)',
               }}
             >
               <motion.svg

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import {
   ABOUT,
   CREDENTIALS,
@@ -12,8 +12,12 @@ import {
   SplitText,
   prefersReducedMotion,
 } from './lib/motion'
-import { LetterSwap } from './LetterSwap'
+import { createDrawable, stagger } from 'animejs'
+import { useScrollAnime } from './lib/scrollAnime'
+import { BorderBeam } from './BorderBeam'
+import { useSpaceBackdrop } from './SpaceBackdrop'
 import { LollipopCarousel, type LollipopItem } from './LollipopCarousel'
+import { AnimatePresence, motion } from 'framer-motion'
 import { CertificateCoverflow, type CoverflowItem } from './CertificateCoverflow'
 import { GooeyDropdown } from './GooeyDropdown'
 import { ParticleButton } from './ParticleButton'
@@ -28,7 +32,7 @@ import { ContactOrbit } from './ContactOrbit'
 export const SECTION_BG = 'rgba(8,8,13,0.46)'
 const PROSE_SHADOW = '0 1px 20px rgba(0,0,0,0.6)'
 const PROJECT_ACCENTS: Record<string, string> = {
-  '01': '#60a5fa',
+  '01': '#f87171',
   '02': '#f59e0b',
   '03': '#34d399',
   '04': '#a78bfa',
@@ -37,7 +41,7 @@ const PROJECT_ACCENTS: Record<string, string> = {
 }
 
 const ISSUER_ACCENTS: Record<string, string> = {
-  Microsoft: '#60a5fa',
+  Microsoft: '#f87171',
   IBM: '#38bdf8',
   Coursera: '#a78bfa',
   Udemy: '#f59e0b',
@@ -72,11 +76,12 @@ function escapeXml(value: string) {
 }
 
 // Projects without a reachable demo screenshot get generated art in the same
-// language the rest of the site uses: accent wash on obsidian, index numeral.
+// language the rest of the site uses: accent wash on near-black, index numeral
+// and title (the capsules show the art at rest, so it carries the name).
 function projectArt(index: string, title: string, accent: string) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
-<defs><radialGradient id="g" cx="0.25" cy="0.2" r="1"><stop offset="0" stop-color="${accent}" stop-opacity="0.55"/><stop offset="0.6" stop-color="#0c0c12"/></radialGradient></defs>
-<rect width="1200" height="800" fill="#07070f"/><rect width="1200" height="800" fill="url(#g)"/>
+<defs><radialGradient id="g" cx="0.25" cy="0.2" r="1"><stop offset="0" stop-color="${accent}" stop-opacity="0.55"/><stop offset="0.6" stop-color="#0c0508"/></radialGradient></defs>
+<rect width="1200" height="800" fill="#0b0508"/><rect width="1200" height="800" fill="url(#g)"/>
 <text x="1160" y="360" text-anchor="end" font-family="Helvetica Neue, Arial, sans-serif" font-size="420" font-weight="700" fill="#ffffff" fill-opacity="0.08">${index}</text>
 <text x="70" y="660" font-family="Menlo, Consolas, monospace" font-size="30" fill="#ffffff" fill-opacity="0.55">${index}</text>
 <text x="70" y="730" font-family="Helvetica Neue, Arial, sans-serif" font-size="58" font-weight="600" fill="#ffffff">${escapeXml(title)}</text>
@@ -117,17 +122,8 @@ export function Reveal({
       })
       tl.fromTo(
         el,
-        { opacity: 0, y: 28, scale: 0.97, filter: 'blur(6px)' },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          filter: 'blur(0px)',
-          duration: 0.7,
-          ease: 'power3.out',
-          // A lingering filter would break backdrop-filter on glass children.
-          clearProps: 'filter',
-        },
+        { opacity: 0, y: 28, scale: 0.97 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: 'power3.out' },
       )
       if (rulePath) {
         tl.fromTo(
@@ -149,6 +145,9 @@ export function Reveal({
   )
 }
 
+// Scrubbed with scroll (anime.js): a huge outlined index numeral drifts in
+// behind the title, the title's letters flip up one after another, and the
+// wavy rule draws itself — all reversible by scrolling back up.
 export function SectionHeader({
   index,
   title,
@@ -156,24 +155,67 @@ export function SectionHeader({
   index: string
   title: string
 }) {
+  const ref = useRef<HTMLDivElement>(null)
+
+  useScrollAnime(
+    ref,
+    (tl, el) => {
+      tl.add(el.querySelector('.sh-ghost')!, { translateX: ['22%', '0%'], opacity: [0, 1], duration: 1000, ease: 'outQuad' }, 0)
+        .add(el.querySelector('.sh-index')!, { opacity: [0, 1], translateY: [14, 0], duration: 300 }, 0)
+        .add(
+          el.querySelectorAll('.sh-char'),
+          { opacity: [0, 1], rotateX: [-100, 0], translateY: ['35%', '0%'], duration: 420, ease: 'outBack(1.4)', delay: stagger(35) },
+          120,
+        )
+        .add(createDrawable(el.querySelector('.rule-path')!), { draw: ['0 0', '0 1'], duration: 650, ease: 'inOutQuad' }, 350)
+    },
+    { start: 'top 95%', end: 'top 50%' },
+  )
+
   return (
-    <Reveal>
-      <div className="mb-3 flex items-baseline gap-4">
-        <span className="font-mono text-[13px] text-white/50">{index}</span>
+    <div ref={ref} className="relative">
+      <span
+        aria-hidden
+        className="sh-ghost pointer-events-none absolute -top-[0.42em] right-0 select-none text-transparent"
+        style={{
+          fontFamily: 'var(--font-heading)',
+          fontSize: 'clamp(120px, 19vw, 280px)',
+          lineHeight: 1,
+          letterSpacing: '-0.04em',
+          WebkitTextStroke: '1px rgba(255,255,255,0.13)',
+        }}
+      >
+        {index}
+      </span>
+      <div className="relative mb-3 flex items-baseline gap-4">
+        <span className="sh-index font-mono text-[13px] text-white/50">{index}</span>
         <h2
+          aria-label={title}
           className="text-[28px] text-white sm:text-[42px]"
           style={{
             fontFamily: 'var(--font-heading)',
             letterSpacing: '-0.02em',
             lineHeight: 1.05,
             textShadow: PROSE_SHADOW,
+            perspective: 400,
           }}
         >
-          <LetterSwap text={title} />
+          {title.split(' ').map((word, w) => (
+            <Fragment key={w}>
+              {w > 0 && ' '}
+              <span aria-hidden className="inline-block whitespace-nowrap">
+                {word.split('').map((ch, i) => (
+                  <span key={i} className="sh-char inline-block" style={{ transformOrigin: '50% 100%' }}>
+                    {ch}
+                  </span>
+                ))}
+              </span>
+            </Fragment>
+          ))}
         </h2>
       </div>
       <svg
-        className="mb-10 h-2 w-full sm:mb-14"
+        className="relative mb-10 h-2 w-full sm:mb-14"
         viewBox="0 0 400 10"
         preserveAspectRatio="none"
         aria-hidden
@@ -190,74 +232,84 @@ export function SectionHeader({
           stroke="rgba(255,255,255,0.4)"
           strokeWidth="1.5"
           fill="none"
-          pathLength={1}
-          strokeDasharray={1}
-          strokeDashoffset={1}
         />
       </svg>
-    </Reveal>
+    </div>
   )
 }
 
+// Every section rises and settles into place as it enters, then sinks back a
+// little as it leaves, so scrolling reads as layers passing rather than one
+// flat page. The <section> itself is the scroll trigger and never moves (it
+// also carries the scrim, so there are no seams); only its inner wrappers do.
 function Section({ id, children }: { id: string; children: ReactNode }) {
+  const ref = useRef<HTMLElement>(null)
+
+  useScrollAnime(
+    ref,
+    (tl, el) => {
+      tl.add(el.querySelector('.section-in')!, { translateY: [70, 0], scale: [0.96, 1], opacity: [0.25, 1], duration: 1000, ease: 'outQuad' })
+    },
+    { start: 'top bottom', end: 'top 25%' },
+  )
+  useScrollAnime(
+    ref,
+    (tl, el) => {
+      tl.add(el.querySelector('.section-out')!, { translateY: [0, -50], scale: [1, 0.97], opacity: [1, 0.35], duration: 1000, ease: 'inQuad' })
+    },
+    { start: 'bottom 35%', end: 'bottom top' },
+  )
+
   return (
     <section
+      ref={ref}
       id={id}
-      className="relative w-full px-5 py-20 sm:px-8 sm:py-28 md:px-10"
+      className="relative w-full overflow-x-clip px-5 py-20 sm:px-8 sm:py-28 md:px-10"
       style={{
         // The first section after the hero fades its scrim in, so there's no
         // hard horizontal seam where the unscrimmed hero ends.
         background: id === 'about' ? `linear-gradient(180deg, rgba(8,8,13,0) 0px, ${SECTION_BG} 240px)` : SECTION_BG,
       }}
     >
-      <div className="w-full">{children}</div>
+      <div className="section-out w-full" style={{ transformOrigin: '50% 100%' }}>
+        <div className="section-in w-full" style={{ transformOrigin: '50% 0%' }}>
+          {children}
+        </div>
+      </div>
     </section>
   )
 }
 
-// Blurb reveals line-by-line via SplitText's built-in line-masking (each line
-// gets an overflow-hidden wrapper for free via `mask: 'lines'`), instead of
-// fading in as one block.
+// Blurb lights up word by word as it scrolls through the viewport (scrubbed,
+// so it dims again scrolling back); the phrases that say what Ayush does are
+// picked out in amber.
+const BLURB_KEYWORDS = /^(machine|learning,|NLP|Generative|AI|multi-agent|legal|document|intelligence\.|explainable,|measured,)$/
+
 function AboutBlurb({ text }: { text: string }) {
   const ref = useRef<HTMLParagraphElement>(null)
 
-  useLayoutEffect(() => {
-    const el = ref.current
-    if (!el) return
-
-    if (prefersReducedMotion()) {
-      gsap.set(el, { opacity: 1 })
-      return
-    }
-
-    const split = new SplitText(el, { type: 'lines', mask: 'lines' })
-    gsap.set(el, { opacity: 1 })
-    const tween = gsap.fromTo(
-      split.lines,
-      { yPercent: 110, opacity: 0 },
-      {
-        yPercent: 0,
-        opacity: 1,
-        duration: 0.8,
-        stagger: 0.08,
-        ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 85%', once: true },
-      },
-    )
-    return () => {
-      tween.scrollTrigger?.kill()
-      tween.kill()
-      split.revert()
-    }
-  }, [text])
+  useScrollAnime(
+    ref,
+    (tl, el) => {
+      tl.add(el.querySelectorAll('.blurb-word'), { opacity: [0.14, 1], duration: 300, delay: stagger(45) })
+    },
+    { start: 'top 80%', end: 'bottom 45%' },
+  )
 
   return (
     <p
       ref={ref}
-      className="max-w-xl text-[17px] leading-relaxed text-white/85 sm:text-[19px]"
-      style={{ textShadow: PROSE_SHADOW, opacity: 0 }}
+      className="max-w-xl text-[21px] leading-snug text-white sm:text-[27px]"
+      style={{ fontFamily: 'var(--font-heading)', letterSpacing: '-0.01em', textShadow: PROSE_SHADOW }}
     >
-      {text}
+      {text.split(' ').map((word, i) => (
+        <Fragment key={i}>
+          {i > 0 && ' '}
+          <span className="blurb-word" style={BLURB_KEYWORDS.test(word) ? { color: '#fdba74' } : undefined}>
+            {word}
+          </span>
+        </Fragment>
+      ))}
     </p>
   )
 }
@@ -317,7 +369,49 @@ function StatCounter({ value }: { value: string }) {
   )
 }
 
+// Stat tiles rise out of the grid from the centre outwards as you scroll,
+// each wrapped in a glass card with a Lightswind border beam running round it.
+function StatTiles() {
+  const ref = useRef<HTMLDivElement>(null)
+
+  useScrollAnime(
+    ref,
+    (tl, el) => {
+      tl.add(el.querySelectorAll('.stat-tile'), {
+        translateY: [80, 0],
+        scale: [0.82, 1],
+        rotate: (_?: unknown, i = 0) => [i % 2 ? 6 : -6, 0],
+        opacity: [0, 1],
+        duration: 600,
+        ease: 'outBack(1.2)',
+        delay: stagger(130, { from: 'center' }),
+      })
+    },
+    { start: 'top 95%', end: 'top 55%' },
+  )
+
+  return (
+    <div ref={ref} className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4 md:grid-cols-2 lg:grid-cols-4">
+      {ABOUT.stats.map((s, i) => (
+        <div
+          key={s.label}
+          className="stat-tile relative overflow-hidden rounded-2xl px-4 py-4"
+          style={{ background: 'rgba(12,12,18,0.55)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.08)' }}
+        >
+          <StatCounter value={s.value} />
+          <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.12em] text-white/55">
+            {s.label}
+          </div>
+          <BorderBeam delay={i * 1.8} />
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export function About() {
+  useSpaceBackdrop('about')
+
   return (
     <Section id="about">
       <SectionHeader index="01" title="About" />
@@ -326,18 +420,7 @@ export function About() {
         <div>
           <AboutBlurb text={ABOUT.blurb} />
 
-          <div className="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-4 md:grid-cols-2 lg:grid-cols-4">
-            {ABOUT.stats.map((s, i) => (
-              <Reveal key={s.label} delay={i * 70}>
-                <div>
-                  <StatCounter value={s.value} />
-                  <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.12em] text-white/55">
-                    {s.label}
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
+          <StatTiles />
 
           <Reveal delay={120}>
             <div className="mt-10 font-mono text-[12px] leading-relaxed text-white/55">
@@ -361,19 +444,40 @@ export function About() {
   )
 }
 
-// Work: the Lollipop strip drifts across the avatar video; hovering a capsule
-// lifts it into a focus card with the project's blurb, stack and a link to its
-// case study. A gooey dropdown filters the strip by domain.
+// Work: the Lollipop strip drifts across the page; hovering a capsule lifts
+// it into a focus card with the project's blurb, stack and a link to its case
+// study. A gooey dropdown filters the strip by domain.
+const REAL_PREVIEWS: Record<string, string> = {
+  '01': '/projects/ai-research-assistant.png',
+  '02': '/project-previews/02.jpg',
+  '03': '/project-previews/03.jpg',
+  '06': '/project-previews/06.jpg',
+}
+
 export function Work() {
   const [domain, setDomain] = useState('all')
+  const stageRef = useRef<HTMLDivElement>(null)
+
+  // The strip opens out of a rounded window as it scrolls into view.
+  useScrollAnime(
+    stageRef,
+    (tl, el) => {
+      tl.add(el.firstElementChild!, {
+        clipPath: ['inset(16% 18% 16% 18% round 48px)', 'inset(0% 0% 0% 0% round 0px)'],
+        duration: 1000,
+        ease: 'outQuad',
+      })
+    },
+    { start: 'top 95%', end: 'top 45%' },
+  )
 
   const items = useMemo<LollipopItem[]>(
     () =>
       PROJECTS.filter((p) => domain === 'all' || PROJECT_DOMAINS[domain]?.includes(p.id)).map((p) => {
-        const accent = PROJECT_ACCENTS[p.id] ?? '#60a5fa'
+        const accent = PROJECT_ACCENTS[p.id] ?? '#f87171'
         return {
           key: p.id,
-          image: ['02', '03', '06'].includes(p.id) ? `/project-previews/${p.id}.jpg` : projectArt(p.index, p.title, accent),
+          image: REAL_PREVIEWS[p.id] ?? projectArt(p.index, p.title, accent),
           title: p.title,
           description: p.blurb,
           tags: p.tech.slice(0, 4),
@@ -397,14 +501,28 @@ export function Work() {
           <GooeyDropdown label="Filter projects" icon={<FilterIcon />} options={WORK_FILTERS} value={domain} onChange={setDomain} align="right" />
         </div>
       </Reveal>
-      <div
-        className="relative -mx-5 h-[230px] sm:-mx-8 md:-mx-10 md:h-[clamp(420px,62vh,600px)]"
-        style={{
-          maskImage: 'linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent)',
-          WebkitMaskImage: 'linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent)',
-        }}
-      >
-        <LollipopCarousel key={domain} items={items} itemHeight={150} hoverScale={2.6} />
+      <div ref={stageRef}>
+        <div
+          className="relative -mx-5 h-[230px] sm:-mx-8 md:-mx-10 md:h-[clamp(420px,62vh,600px)]"
+          style={{
+            maskImage: 'linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent)',
+            WebkitMaskImage: 'linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent)',
+          }}
+        >
+          {/* Filtering crossfades the strips — the new one slides in while the
+              old one fades out over it — instead of swapping in one frame. */}
+          <AnimatePresence initial={false}>
+            <motion.div
+              key={domain}
+              className="absolute inset-0"
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } }}
+              exit={{ opacity: 0, x: -40, transition: { duration: 0.35, ease: [0.4, 0, 1, 1] } }}
+            >
+              <LollipopCarousel items={items} itemHeight={150} hoverScale={2.6} />
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
       <Reveal delay={120}>
         <div className="mt-6">
@@ -417,7 +535,7 @@ export function Work() {
 
 function educationArt() {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
-<defs><radialGradient id="g" cx="0.3" cy="0.25" r="1"><stop offset="0" stop-color="#60a5fa" stop-opacity="0.75"/><stop offset="0.7" stop-color="#0c0c12"/></radialGradient></defs>
+<defs><radialGradient id="g" cx="0.3" cy="0.25" r="1"><stop offset="0" stop-color="#f87171" stop-opacity="0.75"/><stop offset="0.7" stop-color="#0c0c12"/></radialGradient></defs>
 <rect width="800" height="600" fill="#07070f"/><rect width="800" height="600" fill="url(#g)"/>
 <g stroke="#ffffff" stroke-width="10" stroke-linecap="round" transform="translate(400 250)"><line x1="0" y1="-70" x2="0" y2="70"/><line x1="-70" y1="0" x2="70" y2="0"/><line x1="-50" y1="-50" x2="50" y2="50"/><line x1="50" y1="-50" x2="-50" y2="50"/></g>
 <text x="400" y="440" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif" font-size="54" font-weight="600" fill="#ffffff">B.Tech · CSE</text>
@@ -470,6 +588,23 @@ const ISSUERS = ['all', ...Array.from(new Set(CREDENTIALS.map((c) => c.issuer)))
 
 export function Certificates() {
   const [issuer, setIssuer] = useState('all')
+  const stageRef = useRef<HTMLDivElement>(null)
+
+  // The coverflow swings up from a backward tilt, like a deck being raised.
+  useScrollAnime(
+    stageRef,
+    (tl, el) => {
+      tl.add(el.firstElementChild!, {
+        rotateX: [32, 0],
+        translateY: [90, 0],
+        scale: [0.86, 1],
+        opacity: [0.15, 1],
+        duration: 1000,
+        ease: 'outQuad',
+      })
+    },
+    { start: 'top 95%', end: 'top 40%' },
+  )
 
   const items = useMemo<CoverflowItem[]>(
     () =>
@@ -479,7 +614,7 @@ export function Certificates() {
         title: c.title,
         href: c.href,
         thumb: `/certificates/thumbs/${certSlug(c.href)}.webp`,
-        accent: ISSUER_ACCENTS[c.issuer] ?? '#60a5fa',
+        accent: ISSUER_ACCENTS[c.issuer] ?? '#f87171',
       })),
     [issuer],
   )
@@ -501,7 +636,11 @@ export function Certificates() {
           <GooeyDropdown label="Filter by issuer" icon={<FilterIcon />} options={options} value={issuer} onChange={setIssuer} align="right" />
         </div>
       </Reveal>
-      <CertificateCoverflow items={items} />
+      <div ref={stageRef} style={{ perspective: 1400 }}>
+        <div style={{ transformOrigin: '50% 100%' }}>
+          <CertificateCoverflow items={items} />
+        </div>
+      </div>
     </Section>
   )
 }
@@ -530,7 +669,7 @@ function FooterMark() {
   }, [])
 
   return (
-    <svg viewBox="0 0 24 24" width="26" height="26" className="text-[#60a5fa]" aria-hidden>
+    <svg viewBox="0 0 24 24" width="26" height="26" className="text-[#f87171]" aria-hidden>
       <path ref={pathRef} d={MARK_STAR} fill="currentColor" />
     </svg>
   )
@@ -569,7 +708,7 @@ function DrawUnderline() {
       <path
         ref={ref}
         d="M2,8 Q40,2 80,8 T160,8 T240,8 T300,8"
-        stroke="#60a5fa"
+        stroke="#f87171"
         strokeWidth="2"
         fill="none"
       />
@@ -586,6 +725,70 @@ function useIstClock() {
     return () => window.clearInterval(id)
   }, [])
   return time
+}
+
+// Contact opens with a giant marquee that runs on its own and answers the
+// scroll: scrolling faster (either way) speeds it up and leans it into the
+// motion, and both ease back once the page settles.
+function VelocityMarquee() {
+  const ref = useRef<HTMLDivElement>(null)
+
+  useLayoutEffect(() => {
+    const track = ref.current
+    if (!track || prefersReducedMotion()) return
+    const loop = gsap.to(track, { xPercent: -50, duration: 30, ease: 'none', repeat: -1 })
+    const skewTo = gsap.quickTo(track, 'skewX', { duration: 0.4, ease: 'power3.out' })
+    let speed = 1
+    let skew = 0
+    const st = ScrollTrigger.create({
+      trigger: track,
+      start: 'top bottom',
+      end: 'bottom top',
+      onUpdate: (self) => {
+        const v = self.getVelocity()
+        speed = Math.max(speed, Math.min(7, 1 + Math.abs(v) / 250))
+        skew = gsap.utils.clamp(-14, 14, -v / 200)
+      },
+    })
+    const settle = () => {
+      speed += (1 - speed) * 0.04
+      skew *= 0.88
+      loop.timeScale(speed)
+      skewTo(skew)
+    }
+    gsap.ticker.add(settle)
+    return () => {
+      gsap.ticker.remove(settle)
+      st.kill()
+      loop.kill()
+    }
+  }, [])
+
+  const phrase = (
+    <span className="flex items-center gap-[0.35em] pr-[0.35em]">
+      <span className="text-white">Open to work</span>
+      <span style={{ color: '#f59e0b' }}>✦</span>
+      <span className="text-transparent" style={{ WebkitTextStroke: '1.5px rgba(253,186,116,0.8)' }}>
+        Let&apos;s build something rare
+      </span>
+      <span style={{ color: '#f87171' }}>✦</span>
+    </span>
+  )
+
+  return (
+    <div aria-hidden className="-mx-5 mb-16 overflow-hidden sm:-mx-8 md:-mx-10">
+      <div
+        ref={ref}
+        className="flex w-max whitespace-nowrap text-[15vw] leading-[1.05] sm:text-[10vw]"
+        style={{ fontFamily: 'var(--font-heading)', letterSpacing: '-0.035em' }}
+      >
+        {phrase}
+        {phrase}
+        {phrase}
+        {phrase}
+      </div>
+    </div>
+  )
 }
 
 // Heading reveal: chars rise out of a mask once the footer scrolls in.
@@ -641,7 +844,7 @@ function Field({
     'aria-invalid': Boolean(error),
     'aria-describedby': error ? `${id}-error` : undefined,
     className:
-      'peer w-full resize-none rounded-2xl bg-[rgba(12,12,18,0.72)] px-4 pb-2.5 pt-6 text-[15px] text-white outline-none transition-shadow duration-300 placeholder-transparent focus:shadow-[0_0_0_1px_rgba(96,165,250,0.7),0_0_24px_-6px_rgba(96,165,250,0.6)]',
+      'peer w-full resize-none rounded-2xl bg-[rgba(12,12,18,0.72)] px-4 pb-2.5 pt-6 text-[15px] text-white outline-none transition-shadow duration-300 placeholder-transparent focus:shadow-[0_0_0_1px_rgba(248,113,113,0.7),0_0_24px_-6px_rgba(248,113,113,0.6)]',
     style: { boxShadow: error ? '0 0 0 1px rgba(251,113,133,0.7)' : 'inset 0 0 0 1px rgba(255,255,255,0.12)' },
   }
   return (
@@ -653,7 +856,7 @@ function Field({
       )}
       <label
         htmlFor={id}
-        className="pointer-events-none absolute left-4 top-2 font-mono text-[10px] uppercase tracking-[0.18em] text-white/45 transition-all duration-200 peer-placeholder-shown:top-4 peer-placeholder-shown:text-[13px] peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-focus:top-2 peer-focus:text-[10px] peer-focus:uppercase peer-focus:tracking-[0.18em] peer-focus:text-[#93c5fd]"
+        className="pointer-events-none absolute left-4 top-2 font-mono text-[10px] uppercase tracking-[0.18em] text-white/45 transition-all duration-200 peer-placeholder-shown:top-4 peer-placeholder-shown:text-[13px] peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-focus:top-2 peer-focus:text-[10px] peer-focus:uppercase peer-focus:tracking-[0.18em] peer-focus:text-[#fdba74]"
       >
         {label}
       </label>
@@ -731,6 +934,7 @@ export function Footer() {
       className="relative w-full overflow-hidden px-5 py-20 sm:px-8 sm:py-28 md:px-10"
       style={{ background: SECTION_BG }}
     >
+      <VelocityMarquee />
       <div className="grid items-center gap-16 lg:grid-cols-[1.1fr_1fr]">
         <div>
           <Reveal>
@@ -746,7 +950,7 @@ export function Footer() {
             <div className="flex flex-wrap items-center gap-3">
               <a
                 href={`mailto:${LINKS.email}`}
-                className="text-[19px] text-white underline decoration-white/30 underline-offset-[6px] transition-colors hover:decoration-[#60a5fa] sm:text-[24px]"
+                className="text-[19px] text-white underline decoration-white/30 underline-offset-[6px] transition-colors hover:decoration-[#f87171] sm:text-[24px]"
               >
                 {LINKS.email}
               </a>
@@ -754,8 +958,8 @@ export function Footer() {
                 type="button"
                 onClick={copyEmail}
                 aria-label={`Copy ${LINKS.email}`}
-                className="rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-wider text-[#93c5fd] transition-colors hover:bg-white/10"
-                style={{ boxShadow: 'inset 0 0 0 1px rgba(147,197,253,0.35)' }}
+                className="rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-wider text-[#fdba74] transition-colors hover:bg-white/10"
+                style={{ boxShadow: 'inset 0 0 0 1px rgba(253,186,116,0.35)' }}
               >
                 <span ref={copiedRef} aria-live="polite">
                   Copy

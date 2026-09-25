@@ -64,7 +64,7 @@ export function IntroReveal() {
         scrollTrigger: {
           trigger: section,
           start: 'top top',
-          end: '+=220%',
+          end: '+=130%',
           pin: true,
           scrub: 1,
           invalidateOnRefresh: true,
@@ -74,16 +74,18 @@ export function IntroReveal() {
       tl.fromTo(
         video,
         { clipPath: closedClip },
-        { clipPath: 'inset(0px 0px 0px 0px round 0px)', duration: 1, ease: 'power2.inOut' },
+        // Fully open just before the pin releases into the depth tunnel, so the
+        // flight starts over a full-screen video (no dark margin).
+        { clipPath: 'inset(0px 0px 0px 0px round 0px)', duration: 0.55, ease: 'power2.inOut' },
         0,
       )
         // The labels ride the window's edges outward (sideways on wide screens,
         // up/down when stacked on narrow ones), then dissolve.
-        .to(leftRef.current, { x: () => (narrow() ? 0 : -sideOffset()), y: () => (narrow() ? -verticalOffset() : 0), duration: 1, ease: 'power2.inOut' }, 0)
-        .to(rightRef.current, { x: () => (narrow() ? 0 : sideOffset()), y: () => (narrow() ? verticalOffset() : 0), duration: 1, ease: 'power2.inOut' }, 0)
-        .to([leftRef.current, rightRef.current], { opacity: 0, filter: 'blur(10px)', duration: 0.35 }, 0.45)
+        .to(leftRef.current, { x: () => (narrow() ? 0 : -sideOffset()), y: () => (narrow() ? -verticalOffset() : 0), duration: 0.55, ease: 'power2.inOut' }, 0)
+        .to(rightRef.current, { x: () => (narrow() ? 0 : sideOffset()), y: () => (narrow() ? verticalOffset() : 0), duration: 0.55, ease: 'power2.inOut' }, 0)
+        .to([leftRef.current, rightRef.current], { opacity: 0, filter: 'blur(10px)', duration: 0.25 }, 0.25)
         .to([hintRef.current, eyebrowRef.current], { opacity: 0, y: -12, duration: 0.2 }, 0)
-        .to(chrome, { autoAlpha: 1, duration: 0.15 }, 0.85)
+        .to(chrome, { autoAlpha: 1, duration: 0.15 }, 0.45)
 
       // Idle nudge until the visitor first scrolls.
       gsap.to(hintRef.current?.querySelector('.intro-arrow') ?? [], {

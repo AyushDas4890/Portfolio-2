@@ -214,7 +214,7 @@ export function ParticleButton({
   background ??= glass ? 'rgba(10,10,15,0.55)' : '#ffffff'
   textColor ??= glass ? '#ffffff' : '#000000'
   border ??= glass ? '1px solid rgba(255,255,255,0.22)' : '1px solid rgba(255,255,255,0.2)'
-  particleColor ??= glass ? '#93c5fd' : '#60a5fa'
+  particleColor ??= glass ? '#fdba74' : '#f87171'
   const rootRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const clipRef = useRef<HTMLDivElement>(null)
@@ -494,7 +494,7 @@ export function ParticleButton({
           style={{
             borderRadius: radius,
             willChange: 'transform, opacity',
-            boxShadow: focused ? `0 0 0 3px rgba(96,165,250,0.55)` : 'none',
+            boxShadow: focused ? `0 0 0 3px rgba(248,113,113,0.55)` : 'none',
             transition: 'box-shadow 0.2s ease',
           }}
         >

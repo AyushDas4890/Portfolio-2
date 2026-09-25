@@ -1009,8 +1009,8 @@ export function LollipopCarousel({
           {item.tags.map((tag) => (
             <span
               key={tag}
-              className="whitespace-nowrap rounded-full px-2.5 py-1 font-mono text-[11px] text-[#93c5fd]"
-              style={{ background: 'rgba(96,165,250,0.12)' }}
+              className="whitespace-nowrap rounded-full px-2.5 py-1 font-mono text-[11px] text-[#fdba74]"
+              style={{ background: 'rgba(248,113,113,0.12)' }}
             >
               {tag}
             </span>
@@ -1210,7 +1210,7 @@ const STYLES = `
 .lollipop-media[data-state="dim"] { transition: top .26s ${EASE}, width .26s ${EASE}, height .26s ${EASE}, opacity .3s ${EASE}; }
 .lollipop-media[data-state="hidden"] { transition: top .26s ${EASE}, width .26s ${EASE}, height .26s ${EASE}, opacity 90ms linear; }
 .lollipop-media[data-state="returning"] { transition: top .26s ${EASE}, width .26s ${EASE}, height .26s ${EASE}, opacity 110ms linear var(--lollipop-close-dur); }
-.lollipop-media:focus-visible, .lollipop-focus-card:focus-visible { outline: 2px solid #60a5fa; outline-offset: 3px; }
+.lollipop-media:focus-visible, .lollipop-focus-card:focus-visible { outline: 2px solid #f87171; outline-offset: 3px; }
 .lollipop-skeleton { animation: lollipop-pulse 1.6s ease-in-out infinite; }
 @keyframes lollipop-pulse { 50% { opacity: .55; } }
 .lollipop-layer { position: fixed; inset: 0; z-index: 45; pointer-events: none; }

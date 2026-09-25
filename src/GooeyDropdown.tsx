@@ -234,7 +234,7 @@ export function GooeyDropdown({
         className="relative flex items-center gap-2 whitespace-nowrap px-4 text-[14px] text-white transition-transform duration-200 active:scale-[0.96]"
         style={{ height: TRIGGER_H, borderRadius: TRIGGER_H / 2, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)' }}
       >
-        {icon && <span className="flex h-5 w-5 items-center justify-center text-[#93c5fd]">{icon}</span>}
+        {icon && <span className="flex h-5 w-5 items-center justify-center text-[#fdba74]">{icon}</span>}
         <span>{triggerText}</span>
         <span className="text-white/55 transition-transform duration-300" style={{ transform: open ? 'rotate(180deg)' : undefined }}>
           <ChevronIcon />

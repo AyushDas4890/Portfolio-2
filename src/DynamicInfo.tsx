@@ -139,7 +139,7 @@ export function DynamicInfo({
                   className="flex h-[36px] w-[36px] shrink-0 items-center justify-center overflow-hidden rounded-full text-[13px] text-white"
                   style={{
                     fontFamily: 'var(--font-heading)',
-                    background: 'linear-gradient(135deg, #60a5fa, #1e3a8a)',
+                    background: 'linear-gradient(135deg, #f87171, #1e3a8a)',
                     boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.35)',
                   }}
                 >

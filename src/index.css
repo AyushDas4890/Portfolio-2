@@ -8,7 +8,7 @@
 
   /* Profile palette: obsidian ground, blue identity, gold signal */
   --ground: #07070f;
-  --identity: #60a5fa;
+  --identity: #f87171;
   --identity-glow: rgba(96, 165, 250, 0.25);
   --signal: #f59e0b;
   --signal-glow: rgba(245, 158, 11, 0.25);
@@ -146,7 +146,7 @@ html.cursor-fx-active * {
   translate: -50% -50%;
   font-family: var(--font-body), monospace;
   font-size: 13px;
-  color: #93c5fd;
+  color: #fdba74;
   text-shadow: 0 0 8px rgba(96, 165, 250, 0.7);
   pointer-events: none;
   will-change: transform, opacity;
@@ -172,7 +172,7 @@ html.cursor-fx-active * {
   pointer-events: none;
 }
 .glass-tile:focus-visible {
-  box-shadow: 0 0 0 2px #60a5fa;
+  box-shadow: 0 0 0 2px #f87171;
 }
 
 /* Intro reveal name labels (see IntroReveal.tsx) */

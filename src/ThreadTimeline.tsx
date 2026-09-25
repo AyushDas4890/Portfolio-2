@@ -283,7 +283,7 @@ export function ThreadTimeline({ nodes }: { nodes: ThreadNode[] }) {
                     style={{
                       background:
                         i % 2 === 0
-                          ? 'repeating-linear-gradient(90deg, rgba(96,165,250,0.45) 0 6px, rgba(147,197,253,0.38) 6px 12px)'
+                          ? 'repeating-linear-gradient(90deg, rgba(248,113,113,0.45) 0 6px, rgba(253,186,116,0.38) 6px 12px)'
                           : 'repeating-linear-gradient(90deg, rgba(245,158,11,0.45) 0 6px, rgba(251,191,36,0.36) 6px 12px)',
                       transform: `translateX(-50%) rotate(${i % 2 === 0 ? -5 : 4}deg)`,
                       boxShadow: '0 1px 2px rgba(0,0,0,0.15)',

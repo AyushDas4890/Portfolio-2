@@ -31,6 +31,10 @@ gsap.registerPlugin(
   ScrollSmoother,
 )
 
+// Mobile URL bars resize the viewport while scrolling; re-measuring every
+// trigger then is what makes scrubbed sections jump on phones.
+ScrollTrigger.config({ ignoreMobileResize: true })
+
 // Single signature ease used across every section for continuity.
 export const SITE_EASE = CustomEase.create('siteEase', 'M0,0 C0.16,1 0.3,1 1,1')
 

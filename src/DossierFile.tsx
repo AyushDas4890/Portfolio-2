@@ -152,7 +152,7 @@ export function DossierFile() {
               setOpen((o) => !o)
             }
           }}
-          className="relative h-[250px] w-[190px] cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[#60a5fa]/60 sm:h-[370px] sm:w-[280px]"
+          className="relative h-[250px] w-[190px] cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[#f87171]/60 sm:h-[370px] sm:w-[280px]"
           style={{ transformStyle: 'preserve-3d', borderRadius: 24 }}
         >
           {/* back cover — visible sliver behind the front */}
@@ -160,7 +160,7 @@ export function DossierFile() {
             aria-hidden
             className="absolute inset-0 translate-x-[10px] rounded-[24px]"
             style={{
-              background: 'linear-gradient(160deg, #3b6fd6, #172a66)',
+              background: 'linear-gradient(160deg, #9f1239, #3b0a14)',
               boxShadow: '0 30px 60px -30px rgba(0,0,0,0.9)',
             }}
           />
@@ -195,7 +195,7 @@ export function DossierFile() {
               </p>
               <ul className="mt-3 flex flex-col gap-2 sm:mt-4 sm:gap-2.5">
                 {ABOUT.competencies.map((c) => (
-                  <li data-row key={c.title} className="border-l border-[#60a5fa]/50 pl-2.5">
+                  <li data-row key={c.title} className="border-l border-[#f87171]/50 pl-2.5">
                     <p className="text-[12px] leading-tight text-white sm:text-[13px]" style={{ fontFamily: 'var(--font-heading)' }}>
                       {c.title}
                     </p>
@@ -218,7 +218,7 @@ export function DossierFile() {
             aria-hidden
             className="absolute inset-0 flex flex-col justify-between overflow-hidden rounded-[24px] p-5 sm:p-6"
             style={{
-              background: 'linear-gradient(160deg, #60a5fa 0%, #3b6fd6 42%, #1e3a8a 100%)',
+              background: 'linear-gradient(160deg, #fb923c 0%, #dc2626 42%, #7f1d1d 100%)',
               boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.45), inset 0 0 0 1px rgba(255,255,255,0.12), 0 30px 60px -28px rgba(0,0,0,0.9)',
             }}
           >

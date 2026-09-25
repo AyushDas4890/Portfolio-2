@@ -21,6 +21,8 @@ import { SmoothScroll } from './SmoothScroll'
 import { CursorFX } from './CursorFX'
 import { ParticleButton } from './ParticleButton'
 import { DynamicInfo } from './DynamicInfo'
+import { DepthTunnel } from './DepthTunnel'
+import { SpaceBackdrop } from './SpaceBackdrop'
 import { LINKS } from './content'
 
 // H.264, every frame a keyframe: plays in every browser (the original HEVC
@@ -241,7 +243,7 @@ function ActionPills({ visible }: { visible: boolean }) {
               href={inPage ? undefined : pill.href}
               newTab={pill.external}
               onClick={inPage ? () => scrollToSection(pill.href.slice(1)) : undefined}
-              particleColor="#60a5fa"
+              particleColor="#f87171"
             />
           </div>
         )
@@ -266,6 +268,26 @@ function Hero() {
   const badgeTextRef = useRef<HTMLSpanElement>(null)
   const promptRef = useRef<HTMLParagraphElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+
+  // As the page scrolls on to About, the hero copy drifts toward the camera
+  // and dissolves rather than scrolling off as a block.
+  useLayoutEffect(() => {
+    const content = contentRef.current
+    if (!content || prefersReducedMotion()) return
+    const tween = gsap.to(content, {
+      scale: 1.18,
+      yPercent: -18,
+      opacity: 0,
+      ease: 'none',
+      transformOrigin: '0% 100%',
+      scrollTrigger: { trigger: sectionRef.current, start: 'top top', end: 'top -45%', scrub: true },
+    })
+    return () => {
+      tween.scrollTrigger?.kill()
+      tween.kill()
+    }
+  }, [])
 
   useEffect(() => {
     const prompt = promptRef.current
@@ -334,14 +356,14 @@ function Hero() {
       ref={sectionRef}
       id="home"
       className="relative z-[1] flex min-h-screen flex-col justify-end overflow-hidden px-5 pb-12 pt-24 sm:px-8 md:justify-center md:px-10 md:py-0"
-      // Pulled up over the end of the pinned intro so the hero rises in while
-      // the window finishes opening, instead of after a blank screen.
+      // Pulled up over the end of the pinned depth tunnel so the hero rises in
+      // as the flight clears, instead of after a blank screen.
       style={prefersReducedMotion() ? undefined : { marginTop: '-100vh' }}
     >
-      <div className="relative z-10 max-w-xl">
+      <div ref={contentRef} className="relative z-10 max-w-xl">
         <div
           ref={badgeRef}
-          className="mb-3 select-none font-mono text-[11px] uppercase tracking-[0.25em] text-[#93c5fd] sm:mb-4 sm:text-[13px]"
+          className="mb-3 select-none font-mono text-[11px] uppercase tracking-[0.25em] text-[#fdba74] sm:mb-4 sm:text-[13px]"
         >
           <span className="inline-block h-2 w-2 rounded-full bg-[#f59e0b] mr-2 animate-pulse" />
           <span ref={badgeTextRef}>AI / ML Engineer · Generative Intelligence</span>
@@ -392,6 +414,7 @@ export default function App() {
   return (
     <>
       <BackgroundVideo />
+      <SpaceBackdrop />
       <CursorFX />
       {onCaseStudies ? (
         <CaseStudies targetId={caseTarget} />
@@ -411,6 +434,7 @@ export default function App() {
           <SmoothScroll>
           <main className="relative z-[1]">
             <IntroReveal />
+            <DepthTunnel />
             <Hero />
             <About />
             <Work />

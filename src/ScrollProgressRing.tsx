@@ -46,7 +46,7 @@ export function ScrollProgressRing() {
         cx={SIZE / 2}
         cy={SIZE / 2}
         r={RADIUS}
-        stroke="#60a5fa"
+        stroke="#f87171"
         strokeWidth={STROKE}
         fill="none"
         strokeLinecap="round"
