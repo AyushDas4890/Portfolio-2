@@ -24,7 +24,8 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
     const smoother = ScrollSmoother.create({
       wrapper: wrapperRef.current,
       content: contentRef.current,
-      smooth: 1.1,
+      // Kept short: longer smoothing made scrubbed sections trail the wheel.
+      smooth: 0.7,
       smoothTouch: false,
       effects: false,
     })

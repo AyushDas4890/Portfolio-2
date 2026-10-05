@@ -74,8 +74,8 @@ export function IntroReveal() {
       tl.fromTo(
         video,
         { clipPath: closedClip },
-        // Fully open just before the pin releases into the depth tunnel, so the
-        // flight starts over a full-screen video (no dark margin).
+        // Fully open just before the pin releases, so the hero arrives over a
+        // full-screen video (no dark margin).
         { clipPath: 'inset(0px 0px 0px 0px round 0px)', duration: 0.55, ease: 'power2.inOut' },
         0,
       )

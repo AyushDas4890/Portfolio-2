@@ -21,7 +21,6 @@ import { SmoothScroll } from './SmoothScroll'
 import { CursorFX } from './CursorFX'
 import { ParticleButton } from './ParticleButton'
 import { DynamicInfo } from './DynamicInfo'
-import { DepthTunnel } from './DepthTunnel'
 import { SpaceBackdrop } from './SpaceBackdrop'
 import { LINKS } from './content'
 
@@ -71,7 +70,9 @@ function BackgroundVideo() {
     // flooding the decoder with seeks on every mousemove.
     const seek = () => {
       if (!video.duration) return
-      if (Math.abs(video.currentTime - targetTime.current) < 0.005) {
+      // Within one frame (24 fps clip) is close enough; finer seeks decode
+      // the same frame again.
+      if (Math.abs(video.currentTime - targetTime.current) < 1 / 24) {
         seeking.current = false
         return
       }
@@ -85,8 +86,12 @@ function BackgroundVideo() {
       video.currentTime = video.duration / 2
     }
 
+    const backdrop = document.getElementById('space-bg')
     const onMove = (e: MouseEvent) => {
       if (!video.duration) return
+      // Below the hero the backdrop covers the video entirely; don't decode
+      // frames nobody can see.
+      if (backdrop && Number(backdrop.style.opacity) > 0.98) return
       // Blend horizontal (primary) and vertical cursor position into the timeline.
       const fx = e.clientX / window.innerWidth
       const fy = e.clientY / window.innerHeight
@@ -356,9 +361,9 @@ function Hero() {
       ref={sectionRef}
       id="home"
       className="relative z-[1] flex min-h-screen flex-col justify-end overflow-hidden px-5 pb-12 pt-24 sm:px-8 md:justify-center md:px-10 md:py-0"
-      // Pulled up over the end of the pinned depth tunnel so the hero rises in
-      // as the flight clears, instead of after a blank screen.
-      style={prefersReducedMotion() ? undefined : { marginTop: '-100vh' }}
+      // Pulled up over the tail of the intro pin (its window is fully open
+      // by then), so the copy arrives as the reveal ends, not a screen later.
+      style={prefersReducedMotion() ? undefined : { marginTop: '-40vh' }}
     >
       <div ref={contentRef} className="relative z-10 max-w-xl">
         <div
@@ -434,7 +439,6 @@ export default function App() {
           <SmoothScroll>
           <main className="relative z-[1]">
             <IntroReveal />
-            <DepthTunnel />
             <Hero />
             <About />
             <Work />
