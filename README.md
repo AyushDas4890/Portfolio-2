@@ -1,6 +1,6 @@
-# Ayush Das — hero landing page
+# Ayush Das — portfolio
 
-Full-screen personal hero for Ayush Das (AI & Machine Learning Engineer). React + TypeScript + Vite + Tailwind CSS.
+Personal portfolio of Ayush Das (AI / ML engineer), built around a 15-second showreel. React 19 + TypeScript + Vite 8 + Tailwind CSS, with GSAP (ScrollTrigger, SplitText), Framer Motion and Lenis for motion.
 
 ## Run
 
@@ -8,30 +8,17 @@ Full-screen personal hero for Ayush Das (AI & Machine Learning Engineer). React 
 npm install
 npm run dev      # dev server
 npm run build    # typecheck + production build
+npm run lint     # oxlint
 npm run preview  # serve built output
 ```
 
 ## What's here
 
-- `src/App.tsx` — all UI: mouse-scrub background video, obsidian wash overlay, fixed navbar with mobile overlay, hero (blurred intro, typewriter positioning line, action pills).
-- `src/useTypewriter.ts` — typewriter hook (`text`, `speed=38ms`, `startDelay=600ms`) → `{ displayed, done }`.
-- `src/index.css` — Tailwind layers, font vars, profile palette vars (`--ground` / `--identity` / `--signal`), `blink` keyframe.
-- `index.html` — Helvetica Now Display font links.
+- `src/content.ts` — every piece of copy and data: links, showreel chapters, projects and case studies, experience, credentials, capabilities, stack.
+- `src/components/Showreel.tsx` — the reel player: 16:9 on landscape screens, 9:16 on phones, muted autoplay in view, sound / pause / fullscreen, clickable chapters, grows to full-bleed on scroll.
+- `src/sections/` — Hero, About, Capabilities, Stack, Work, Experience, Credentials, Contact.
+- `src/pages/` — Home and the case-study page (`#/work/:id`).
+- `src/lib/` — motion setup (GSAP + Lenis), reveal hooks, media-query/clock hooks, hash router.
+- `public/reel/` — showreel cuts (MP4 + WebM fallback) and posters. Encoding commands are in `knowledge-base/topics/code/showreel.md`.
 
-## Customization points
-
-All content lives in the constants at the top of `src/App.tsx`:
-
-- `BRAND`, `EMAIL`, `GITHUB`, `PORTFOLIO`, `LINKEDIN`
-- `NAV_LINKS` — navbar / mobile menu links
-- `PILLS` — the four action pills (label + href)
-- `TYPEWRITER_TEXT` — the animated positioning line
-- Blurred intro copy is in the `Hero` component.
-
-Palette follows the profile `DESIGN.md`: obsidian `#07070F`, blue `#60A5FA` (identity), amber `#F59E0B` (signal — cursor + copy confirmation).
-
-## Notes
-
-- Background video does not autoplay; it scrubs on horizontal mouse movement (`SENSITIVITY = 0.8`). A `seeked` handler chases the target to avoid seek-flooding.
-- Action pills fade in 400ms after load, independent of the typewriter.
-- The "Reach me" pill copies the email via `navigator.clipboard`.
+Design tokens live in `tailwind.config.js` (mirrored in `src/index.css`); the design contract is `DESIGN.md` / `PRODUCT.md`.

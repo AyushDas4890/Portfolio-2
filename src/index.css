@@ -2,184 +2,169 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Tokens mirror tailwind.config.js; CSS needs them for gradients, masks and
+   the few rules Tailwind can't express. */
 :root {
-  --font-heading: 'HelveticaNowDisplay-Medium', 'Helvetica Neue', Arial, sans-serif;
-  --font-body: 'HelveticaNowDisplayW01-Rg', 'Helvetica Neue', Arial, sans-serif;
-
-  /* Profile palette: obsidian ground, blue identity, gold signal */
-  --ground: #07070f;
-  --identity: #f87171;
-  --identity-glow: rgba(96, 165, 250, 0.25);
-  --signal: #f59e0b;
-  --signal-glow: rgba(245, 158, 11, 0.25);
-  --gold: #f59e0b;
-  --gold-accent: #fbbf24;
+  --bg: #08070e;
+  --raise: #0e0d15;
+  --fg: #f4f3ef;
+  --muted: #a1a0a5;
+  --line: rgba(255, 255, 255, 0.09);
+  --amber: #f59e0b;
+  --cream: #ebe9e3;
+  --ink: #0a0a0f;
+  --gutter: clamp(20px, 4vw, 56px);
+  --nav-h: 68px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  color-scheme: dark;
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  overflow-x: hidden;
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@layer base {
+  html {
+    background: var(--bg);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: theme('fontFamily.sans');
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    /* clip (not hidden) so position: sticky keeps working */
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--amber);
+    color: var(--ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--amber);
+    outline-offset: 3px;
+  }
+
+  section[id] {
+    scroll-margin-top: var(--nav-h);
+  }
+
+  img,
+  video {
+    display: block;
+    max-width: 100%;
+  }
 }
 
-html {
-  scroll-behavior: auto;
-  -webkit-overflow-scrolling: touch;
+@layer components {
+  .shell {
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  /* Big Helvetica-style display type from the reel: medium weight, very
+     tight tracking. Inter's optical sizing switches to its Display cut at
+     these sizes. */
+  .display {
+    font-weight: 500;
+    letter-spacing: -0.045em;
+    line-height: 0.92;
+  }
+
+  .heading {
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1.04;
+  }
+
+  /* Mono caps labels — the reel's "01 / 04" and stat captions. */
+  .eyebrow {
+    font-family: theme('fontFamily.mono');
+    font-size: 11px;
+    line-height: 1.4;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .dot-grid {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.13) 1px, transparent 1.3px);
+    background-size: 28px 28px;
+  }
+
+  /* Thin amber edge across the top of a card, fading out — the reel's stat tiles. */
+  .amber-edge {
+    position: relative;
+  }
+  .amber-edge::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 1px;
+    background: linear-gradient(90deg, var(--amber), rgba(245, 158, 11, 0) 45%);
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  .link-line {
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+    transition: background-size 0.5s var(--ease-out);
+  }
+  .link-line:hover,
+  .link-line:focus-visible {
+    background-size: 100% 1px;
+  }
+
+  .icon-mask {
+    display: inline-block;
+    background-color: currentColor;
+    -webkit-mask: var(--icon) center / contain no-repeat;
+    mask: var(--icon) center / contain no-repeat;
+  }
+
+  /* Split-text masks keep descenders when a heading animates up line by line. */
+  .split-line-mask {
+    padding-bottom: 0.14em;
+    margin-bottom: -0.14em;
+  }
 }
 
-section[id] {
-  scroll-margin-top: 72px;
+/* Showreel in fullscreen: drop the scroll-scale transform and letterbox. */
+.reel-frame:fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  aspect-ratio: auto !important;
+  border-radius: 0 !important;
+  transform: none !important;
+  background: #000;
 }
-
-body {
-  font-family: var(--font-body);
-  background: var(--ground);
-  color: #fff;
-}
-
-/* Fluid Typography Utilities for iOS & Android Screen Matching */
-.fluid-hero {
-  font-size: clamp(1.15rem, 3.8vw + 0.4rem, 1.7rem);
-  line-height: 1.38;
-}
-
-.fluid-heading {
-  font-size: clamp(1.65rem, 4.5vw + 0.4rem, 2.75rem);
-  line-height: 1.1;
-}
-
-.fluid-subheading {
-  font-size: clamp(1.15rem, 2.5vw + 0.3rem, 1.5rem);
-  line-height: 1.25;
-}
-
-.fluid-body {
-  font-size: clamp(0.92rem, 1.2vw + 0.35rem, 1.08rem);
-  line-height: 1.65;
-}
-
-/* Safe Area Insets for iOS Notch & Android Gesture Bars */
-.safe-pt {
-  padding-top: max(1rem, env(safe-area-inset-top));
-}
-
-.safe-pb {
-  padding-bottom: max(1rem, env(safe-area-inset-bottom));
-}
-
-/* Entrance reveals and the rule draw-in are animated by GSAP/ScrollTrigger
-   (see Sections.tsx `Reveal`) rather than CSS transitions, so timelines can
-   stagger across siblings. `.rule` keeps its transform-origin here since GSAP
-   only tweens scaleX. */
-.rule {
-  transform-origin: left center;
-}
-
-/* Cursor-tracked glow overlay for tilt cards (see useTiltGlow.ts). Opacity and
-   --mx/--my are driven by GSAP; this just defines the visual. */
-.card-glow {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    circle at var(--mx, 50%) var(--my, 50%),
-    rgba(255, 255, 255, 0.1),
-    transparent 60%
-  );
+.reel-frame:fullscreen video {
+  object-fit: contain;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
-/* Reduced transparency — frost the translucent chrome into near-solid surfaces */
 @media (prefers-reduced-transparency: reduce) {
-  .glass {
-    background: #050509 !important;
+  .frost {
+    background: #0e0d15 !important;
+    -webkit-backdrop-filter: none !important;
     backdrop-filter: none !important;
   }
-}
-
-/* Increased contrast — near-solid surfaces with a defined border */
-@media (prefers-contrast: more) {
-  .glass {
-    background: #050509 !important;
-  }
-}
-
-/* Custom cursor (see CursorFX.tsx) — native cursor hidden only while the
-   effect is actually running (desktop, fine pointer, motion allowed). */
-html.cursor-fx-active,
-html.cursor-fx-active * {
-  cursor: none !important;
-}
-
-.cursor-glass {
-  /* Hidden until CursorFX starts tracking a fine pointer; otherwise it sits
-     at the top-left corner on load and on touch devices. */
-  opacity: 0;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(6px) saturate(180%);
-  -webkit-backdrop-filter: blur(6px) saturate(180%);
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.4),
-    0 4px 18px rgba(0, 0, 0, 0.35);
-  will-change: transform, opacity;
-}
-
-.cursor-ascii-glyph {
-  position: fixed;
-  translate: -50% -50%;
-  font-family: var(--font-body), monospace;
-  font-size: 13px;
-  color: #fdba74;
-  text-shadow: 0 0 8px rgba(96, 165, 250, 0.7);
-  pointer-events: none;
-  will-change: transform, opacity;
-}
-
-/* Glass tech tile (see SkillOrbit.tsx) */
-.glass-tile {
-  /* No backdrop-filter: 18 tiles move every frame over a video. */
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.16), rgba(18, 18, 26, 0.72) 60%);
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.45),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
-    inset 0 -8px 16px rgba(0, 0, 0, 0.25),
-    0 10px 24px -10px rgba(0, 0, 0, 0.8);
-}
-.glass-tile::after {
-  content: '';
-  position: absolute;
-  inset: 3px 6px auto;
-  height: 40%;
-  border-radius: 10px 10px 16px 16px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), transparent);
-  pointer-events: none;
-}
-.glass-tile:focus-visible {
-  box-shadow: 0 0 0 2px #f87171;
-}
-
-/* Intro reveal name labels (see IntroReveal.tsx) */
-.intro-label {
-  font-family: var(--font-heading);
-  font-size: clamp(30px, 4.4vw, 70px);
-  letter-spacing: -0.03em;
-  line-height: 1;
-  will-change: transform, opacity, filter;
 }
