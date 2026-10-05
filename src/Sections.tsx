@@ -15,6 +15,7 @@ import {
 import { createDrawable, stagger } from 'animejs'
 import { useScrollAnime } from './lib/scrollAnime'
 import { BorderBeam } from './BorderBeam'
+import { useSpaceBackdrop } from './SpaceBackdrop'
 import { LollipopCarousel, type LollipopItem } from './LollipopCarousel'
 import { AnimatePresence, motion } from 'framer-motion'
 import { CertificateCoverflow, type CoverflowItem } from './CertificateCoverflow'
@@ -241,7 +242,7 @@ export function SectionHeader({
 // little as it leaves, so scrolling reads as layers passing rather than one
 // flat page. The <section> itself is the scroll trigger and never moves (it
 // also carries the scrim, so there are no seams); only its inner wrappers do.
-export function Section({ id, children, fadeTop = false }: { id: string; children: ReactNode; fadeTop?: boolean }) {
+function Section({ id, children }: { id: string; children: ReactNode }) {
   const ref = useRef<HTMLElement>(null)
 
   useScrollAnime(
@@ -265,9 +266,9 @@ export function Section({ id, children, fadeTop = false }: { id: string; childre
       id={id}
       className="relative w-full overflow-x-clip px-5 py-20 sm:px-8 sm:py-28 md:px-10"
       style={{
-        // The first section after the hero (`fadeTop`) fades its scrim in, so
-        // there's no hard horizontal seam where the unscrimmed hero ends.
-        background: fadeTop ? `linear-gradient(180deg, rgba(8,8,13,0) 0px, ${SECTION_BG} 240px)` : SECTION_BG,
+        // The first section after the hero fades its scrim in, so there's no
+        // hard horizontal seam where the unscrimmed hero ends.
+        background: id === 'about' ? `linear-gradient(180deg, rgba(8,8,13,0) 0px, ${SECTION_BG} 240px)` : SECTION_BG,
       }}
     >
       <div className="section-out w-full" style={{ transformOrigin: '50% 100%' }}>
@@ -409,6 +410,8 @@ function StatTiles() {
 }
 
 export function About() {
+  useSpaceBackdrop('about')
+
   return (
     <Section id="about">
       <SectionHeader index="01" title="About" />
