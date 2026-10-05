@@ -4,10 +4,11 @@ import { gsap, prefersReducedMotion } from './lib/motion'
 
 /**
  * Below the hero the avatar steps back: the depth tunnel's warm space fades in
- * over the video as About arrives and stays for the rest of the page, its
- * light streaks turning slowly with scroll. Fixed like the video (so it lives
- * outside SmoothScroll); the fade is driven from About via useSpaceBackdrop,
- * since that is the first place the trigger element exists.
+ * over the video as the showreel arrives (so the reel doesn't play over a
+ * second, moving avatar) and stays for the rest of the page, its light streaks
+ * turning slowly with scroll. Fixed like the video (so it lives outside
+ * SmoothScroll); the fade is driven from Showreel via useSpaceBackdrop, since
+ * that is the first place the trigger element exists.
  */
 export function SpaceBackdrop() {
   return (

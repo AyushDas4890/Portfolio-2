@@ -21,6 +21,7 @@
 ### code
 - `20260712-architecture` — **Code architecture v2** — `topics/code/architecture.md` — Router, file map, data flow, artwork fallbacks.
 - `20260712-hero-ring` — **Hero 3D ring** — `topics/code/hero-ring.md` — Twisted-torus geometry, physical material, per-section palette API, perf caps.
+- `20261005-showreel` — **Showreel section** — `topics/code/showreel.md` — Reel section after the hero: cut selection, playback, backdrop hand-off, encoding commands.
 - `20260712-scroll-choreography` — **Scroll choreography** — `topics/code/scroll-choreography.md` — Lenis + ScrollTrigger wiring, stage object, mask reveals, tilt/sweep/parallax, reduced-motion.
 
 ### content

@@ -23,6 +23,7 @@ import { ParticleButton } from './ParticleButton'
 import { DynamicInfo } from './DynamicInfo'
 import { DepthTunnel } from './DepthTunnel'
 import { SpaceBackdrop } from './SpaceBackdrop'
+import { Showreel } from './Showreel'
 import { LINKS } from './content'
 
 // H.264, every frame a keyframe: plays in every browser (the original HEVC
@@ -38,6 +39,7 @@ const RESUME =
 
 const SECTIONS = [
   { id: 'home', label: 'Home' },
+  { id: 'showreel', label: 'Showreel' },
   { id: 'about', label: 'About' },
   { id: 'work', label: 'Work' },
   { id: 'experience', label: 'Experience' },
@@ -436,6 +438,7 @@ export default function App() {
             <IntroReveal />
             <DepthTunnel />
             <Hero />
+            <Showreel />
             <About />
             <Work />
             <ExperienceSection />

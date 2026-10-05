@@ -175,6 +175,19 @@ html.cursor-fx-active * {
   box-shadow: 0 0 0 2px #f87171;
 }
 
+/* Showreel in fullscreen (see Showreel.tsx): letterbox it instead of keeping
+   the in-page frame's size and corners. */
+.reel-frame:fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  aspect-ratio: auto !important;
+  border-radius: 0 !important;
+  background: #000 !important;
+}
+.reel-frame:fullscreen video {
+  object-fit: contain;
+}
+
 /* Intro reveal name labels (see IntroReveal.tsx) */
 .intro-label {
   font-family: var(--font-heading);
