@@ -1,42 +1,13 @@
 // Content sourced from Ayush's live portfolio + GitHub. No facts invented.
-// Files under /public are linked by path so every deployment (production or
-// preview) serves its own copy.
+
+const PF = 'https://portfolio-website-zeta-topaz-84.vercel.app'
 
 export const LINKS = {
   email: 'das.ayush4890@gmail.com',
   github: 'https://github.com/AyushDas4890',
-  portfolio: 'https://portfolio-website-zeta-topaz-84.vercel.app',
+  portfolio: PF,
   linkedin: 'https://linkedin.com/in/ayushdas4890',
-  resume: '/Ayush_Das_ML_Resume.pdf',
-}
-
-// Both cuts of the showreel share one timeline; chapter starts (seconds) were
-// read off the rendered frames.
-export const REEL = {
-  // H.264 MP4 first (Safari/iOS, most browsers); VP9 WebM for Chromium builds
-  // shipped without proprietary codecs.
-  landscape: {
-    mp4: '/reel/showreel-16x9.mp4',
-    webm: '/reel/showreel-16x9.webm',
-    poster: '/reel/showreel-16x9.webp',
-    endPoster: '/reel/showreel-16x9-end.webp',
-  },
-  portrait: {
-    mp4: '/reel/showreel-9x16.mp4',
-    webm: '/reel/showreel-9x16.webm',
-    poster: '/reel/showreel-9x16.webp',
-    endPoster: '/reel/showreel-9x16-end.webp',
-  },
-  duration: 15,
-  chapters: [
-    { start: 0, label: 'Data' },
-    { start: 3.7, label: 'Language' },
-    { start: 5.75, label: 'Agents' },
-    { start: 7.5, label: 'Products' },
-    { start: 9, label: 'Models that ship' },
-    { start: 11.25, label: 'Stack' },
-    { start: 12.75, label: 'Ayush Das' },
-  ],
+  resume: `${PF}/Ayush_Das_ML_Resume.pdf`,
 }
 
 export interface Experience {
@@ -56,7 +27,7 @@ export const EXPERIENCE: Experience[] = [
     period: 'Nov 2025 — Jan 2026',
     description:
       'One month of intensive training followed by one month of practical internship. Built an Android hybrid application and contributed to real-world company projects.',
-    certificate: '/certificates/vanillakart-android-app.png',
+    certificate: `${PF}/certificates/vanillakart-android-app.png`,
   },
   {
     role: 'Web Development Intern',
@@ -65,7 +36,7 @@ export const EXPERIENCE: Experience[] = [
     period: 'Sep 2025 — Nov 2025',
     description:
       'Two-month web development internship managing client websites — WordPress development and user-experience enhancement on production sites.',
-    certificate: '/certificates/vanillakart-web-dev.png',
+    certificate: `${PF}/certificates/vanillakart-web-dev.png`,
   },
 ]
 
@@ -84,8 +55,6 @@ export interface Project {
   tech: string[]
   github: string
   demo?: string
-  /** Optimised demo screenshot; projects without one get generated art. */
-  image?: string
   caseStudy: CaseStudy
 }
 
@@ -100,7 +69,6 @@ export const PROJECTS: Project[] = [
     tech: ['LangGraph', 'OpenAI', 'ChromaDB', 'FastAPI', 'Tavily'],
     github: 'https://github.com/AyushDas4890/AI-Research-Assistant-Pipeline',
     demo: 'https://ayushdas4890-ai-research-assistant-pipeline-app-1sjuvf.streamlit.app/',
-    image: '/projects/ai-research-assistant.webp',
     caseStudy: {
       problem:
         'A single LLM call is a guess — it cannot tell you how confident it is, go find what it is missing, or notice it answered the wrong question. Linear plan → search → write chains produce confident nonsense when retrieval comes back thin.',
@@ -124,7 +92,6 @@ export const PROJECTS: Project[] = [
     tech: ['DeBERTa-v3', 'HuggingFace', 'FAISS', 'spaCy', 'FastAPI', 'React'],
     github: 'https://github.com/AyushDas4890/Legal-Conflict-Resolver',
     demo: 'https://website-orpin-chi-25.vercel.app',
-    image: '/projects/legal-conflict-resolver.webp',
     caseStudy: {
       problem:
         'Contradictions between legal or financial documents are high-stakes and easy to miss. A black-box classifier that just says "conflict" is not usable in a legal context — a reviewer has to see why.',
@@ -148,7 +115,6 @@ export const PROJECTS: Project[] = [
     tech: ['Next.js', 'Three.js', 'scikit-learn', 'Python', 'Tailwind'],
     github: 'https://github.com/AyushDas4890/cancer-tf-dashboard',
     demo: 'https://cancer-tf-dashboard.vercel.app',
-    image: '/projects/cancer-tf-dashboard.webp',
     caseStudy: {
       problem:
         'Transcription-factor signals that distinguish cancer lineages are buried in high-dimensional TCGA RNA-Seq data — and any pipeline claiming to find them has to prove it is finding biology, not fitting noise.',
@@ -172,7 +138,6 @@ export const PROJECTS: Project[] = [
     tech: ['Django', 'XGBoost', 'LangChain', 'ChromaDB', 'OpenAI', 'Docker'],
     github: 'https://github.com/AyushDas4890/Carbon_Footprint_Generator',
     demo: 'https://ad074890-c4future.hf.space',
-    image: '/projects/carbon-footprint.webp',
     caseStudy: {
       problem:
         'A bare point estimate for a carbon footprint is not actionable — decision-makers need a calibrated range and a reason to trust each number.',
@@ -219,7 +184,6 @@ export const PROJECTS: Project[] = [
     tech: ['FastAPI', 'OpenAI', 'ChromaDB', 'gpt-4o-mini', 'Vercel'],
     github: 'https://github.com/AyushDas4890/RAG-Medical_Assistant',
     demo: 'https://rag-medical-assistant-five.vercel.app',
-    image: '/projects/rag-medical-assistant.webp',
     caseStudy: {
       problem:
         'Plain chatbots hallucinate — inventing drug doses and fake citations from memory, a dealbreaker in a clinical context. Typical RAG setups also tend to fail silently with a generic "unable to fetch" the moment something breaks.',
@@ -267,40 +231,15 @@ export interface Credential {
   href: string
 }
 
-export const certificateThumb = (href: string) =>
-  `/certificates/thumbs/${href.split('/').pop()?.replace(/\.(pdf|png)$/i, '') ?? ''}.webp`
-
 // Issuer + title as printed on each certificate file.
 export const CREDENTIALS: Credential[] = [
-  { issuer: 'Microsoft', title: 'Foundations of AI and Machine Learning', href: '/certificates/microsoft-ai-ml-fundamentals.pdf' },
-  { issuer: 'IBM', title: 'Python for Data Science and AI', href: '/certificates/python-for-data-science-ibm.pdf' },
-  { issuer: 'Coursera', title: 'Introduction to Retrieval Augmented Generation (RAG)', href: '/certificates/intro-to-rag.pdf' },
-  { issuer: 'Udemy', title: 'Master Generative AI & Generative AI Tools', href: '/certificates/master-gen-ai.pdf' },
-  { issuer: 'Infosys Springboard', title: 'Build Generative AI Apps with No-Code Tools', href: '/certificates/genai-no-code-tools.pdf' },
-  { issuer: 'Infosys Springboard', title: 'ChatGPT-4 Prompt Engineering', href: '/certificates/chatgpt-prompt-engineering.pdf' },
-  { issuer: 'Udemy', title: 'ChatGPT Made Easy: AI Essentials', href: '/certificates/chatgpt-essentials.pdf' },
-  { issuer: 'CipherSchools', title: 'A Guide to Machine Learning with Data Science', href: '/certificates/data-science-cipherschools.pdf' },
-  { issuer: 'Google', title: 'Crash Course on Python', href: '/certificates/coursera-python.pdf' },
-]
-
-// The reel's four chapters, used as the "What I do" index. Captions are the
-// reel's own lines; tools are drawn from the projects above.
-export const CAPABILITIES = [
-  { word: 'Data', caption: 'Exploration, features, honest baselines', tools: ['Python', 'scikit-learn', 'XGBoost', 'SHAP'] },
-  { word: 'Language', caption: 'NLP & transformers — DeBERTa, BERT, fine-tuning', tools: ['DeBERTa-v3', 'Hugging Face', 'spaCy', 'FAISS'] },
-  { word: 'Agents', caption: 'LangGraph multi-agent pipelines · RAG over ChromaDB', tools: ['LangGraph', 'LangChain', 'ChromaDB', 'OpenAI'] },
-  { word: 'Products', caption: 'FastAPI + React — shipped where people use them', tools: ['FastAPI', 'React', 'Next.js', 'Docker'] },
-]
-
-// Same eight tools, same order, as the reel's stack grid. Icons are Simple
-// Icons (CC0) in /public/tech/mono.
-export const STACK = [
-  { name: 'Python', icon: 'python' },
-  { name: 'PyTorch', icon: 'pytorch' },
-  { name: 'Hugging Face', icon: 'huggingface' },
-  { name: 'LangChain', icon: 'langchain' },
-  { name: 'LangGraph', icon: 'langgraph' },
-  { name: 'FastAPI', icon: 'fastapi' },
-  { name: 'React', icon: 'react' },
-  { name: 'Docker', icon: 'docker' },
+  { issuer: 'Microsoft', title: 'Foundations of AI and Machine Learning', href: `${PF}/certificates/microsoft-ai-ml-fundamentals.pdf` },
+  { issuer: 'IBM', title: 'Python for Data Science and AI', href: `${PF}/certificates/python-for-data-science-ibm.pdf` },
+  { issuer: 'Coursera', title: 'Introduction to Retrieval Augmented Generation (RAG)', href: `${PF}/certificates/intro-to-rag.pdf` },
+  { issuer: 'Udemy', title: 'Master Generative AI & Generative AI Tools', href: `${PF}/certificates/master-gen-ai.pdf` },
+  { issuer: 'Infosys Springboard', title: 'Build Generative AI Apps with No-Code Tools', href: `${PF}/certificates/genai-no-code-tools.pdf` },
+  { issuer: 'Infosys Springboard', title: 'ChatGPT-4 Prompt Engineering', href: `${PF}/certificates/chatgpt-prompt-engineering.pdf` },
+  { issuer: 'Udemy', title: 'ChatGPT Made Easy: AI Essentials', href: `${PF}/certificates/chatgpt-essentials.pdf` },
+  { issuer: 'CipherSchools', title: 'A Guide to Machine Learning with Data Science', href: `${PF}/certificates/data-science-cipherschools.pdf` },
+  { issuer: 'Google', title: 'Crash Course on Python', href: `${PF}/certificates/coursera-python.pdf` },
 ]

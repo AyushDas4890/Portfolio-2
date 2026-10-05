@@ -2,84 +2,109 @@
 
 ## Overview
 
-**Creative North Star: "The reel, continued"**
+**Creative North Star: "The Keynote Stage"**
 
-The site is designed as the showreel's continuation. It opens on the reel's closing card ("Ayush Das✳ / AI / ML Engineer"), the reel plays beneath it, and every section after it reuses the reel's ground, accent, type and frames. Nothing on the page competes with the reel's picture.
+A dark, materially rich engineering portfolio staged the way Apple stages a product: one confident chrome language, a single glowing accent per act, everything else standing back. A twisted glossy 3D ring anchors the scroll — it is not decoration, it is the exhibit, changing color as the visitor moves through six acts (intro, about, work, case studies, experience, credentials, contact). The interface behaves like glass and metal on a stage, not like a document.
+
+Confirmed rejections: no generic dev-portfolio card grid, no purple-gradient hero, no neon/synthwave, no flat opaque chrome where a floating surface should read as material.
 
 **Key Characteristics:**
-- Near-black ground identical to the reel's, so the full-bleed reel dissolves into the page
-- One amber accent; cream, amber and wine-red appear only as whole-section grounds, as in the reel
-- Big, tightly tracked display type against small mono caps labels
-- Motion that reveals content (masked line rises, scrubbed growth) rather than decorating it
+- True-black stage with cool space-gray hardware and a rotating single-hue glow per section
+- Translucent frosted glass on every floating surface (nav, cards, lightbox) — never two stacked
+- Bold, tightly-tracked sans display type; no serif anywhere
+- Instant, physical press feedback on every interactive element
 
 ## Colors
 
-### Accent
-- **Amber** (#f59e0b, hover #fbbf24): role line, chapter counters, primary buttons, progress fills, focus ring, the stack band ground.
+Neutral chrome dominates; color exists only as a single accent glow that rotates meaning per section — never competing accents on the same screen.
 
-### Grounds (from reel frames)
-- **Ground** (#08070e): page background — sampled from the reel.
-- **Raise** (#0e0d15) / **Raise 2** (#15141d): cards, stat tiles, media stages.
-- **Cream** (#ebe9e3) with **Ink** (#0a0a0f) / **Ink muted** (#5c5b61): the Experience sheet (reel "Agents" frame).
-- **Wine** (#ad001e → #6f0010): the avatar portrait card (reel "Models that ship." frame).
+### Primary
+- **System Blue** (#2997ff): links, monograms, the hero/contact ring glow, primary focus states.
 
-### Text
-- **Foreground** (#f4f3ef), **Muted** (#a1a0a5), **Dim** (#7d7c83 — lowest contrast allowed for small labels, ≈4.9:1); hairlines white at 8–15%.
+### Secondary
+- **System Purple** (#bf5af2): index numerals, section labels, the "work" act's ring glow.
+
+### Tertiary
+- **System Orange** (#ff9f0a): CTA hover warmth, certificate accents — used sparingly, never as a base color.
+
+### Neutral
+- **True Black** (#000000): page stage, body background.
+- **Near Black** (#060608): the ring-poster fallback gradient base.
+- **Ink** (#111113) / **Ink 2** (#1c1c1e): card and frame surfaces.
+- **Off-White Text** (#f5f5f7): primary reading color, Apple's own off-white rather than pure white.
+- **Warm Gray Muted** (#98989d): secondary text, captions, metadata.
+- **Hairline** (rgba(255,255,255,0.14)) / **Hairline Soft** (rgba(255,255,255,0.08)): borders and dividers on black.
 
 ### Named Rules
-**The One Accent Rule.** Amber is the only accent. No glows, no second hue, no gradient decoration.
+**The One Glow Rule.** Exactly one accent hue is active per section (carried by the ring and mirrored in that section's labels). Two accent hues never appear as equals in the same viewport.
 
 ## Typography
 
-**Display / body:** Inter Variable with optical sizing (Display cut at large sizes) — stands in for the reel's Helvetica Now Display.
-**Labels:** JetBrains Mono Variable, 11px caps, tracking 0.18em.
+**Display Font:** the OS system font (-apple-system/SF Pro on Apple platforms, Segoe UI Variable on Windows, Roboto on Android) — no webfont is loaded.
+**Body Font:** the OS system font, same stack as Display.
+**Label Font:** the OS system font, uppercase, tightly tracked.
+
+**Character:** The real platform system font carries the whole system at different weights and tracking — bold and tight at display size, comfortable and neutral in body copy, small and confident in caps labels. No serif, no webfont load, no second display face — true to the OS the visitor is actually using.
 
 ### Hierarchy
-- **Display** (500, up to 250px, line-height .92, tracking -0.045em): hero name, section titles, case-study titles.
-- **Heading** (500, line-height 1.04, tracking -0.03em): card titles, statements, highlights.
-- **Body** (400, 16–19px, line-height 1.6): descriptions, problem/approach copy.
-- **Eyebrow** (mono caps): chapter counters, metadata, tool chips.
+- **Display** (650, clamp(3rem, 10.5vw, 8rem), line-height 1.02, letter-spacing -0.03em): hero name, contact headline, case-band titles.
+- **Headline** (650, clamp(1.6rem, 3.4vw, 2.6rem), letter-spacing -0.02em): act headings ("Projects", "Experience").
+- **Title** (600, ~1.2–1.5rem, letter-spacing -0.01em to -0.02em): card titles, xp roles, credential titles.
+- **Body** (400, 0.82–0.95rem, line-height 1.5–1.85): descriptions, problem/approach copy, max ~56–75ch.
+- **Label** (600, 0.62–0.74rem, letter-spacing 0.14em, uppercase): kickers, index numerals, nav counter, chips.
 
 ### Named Rules
-**The Counter Rule.** Every section opens with `■ NN / 06 —— Label`, the reel's chapter counter.
+**The Negative Tracking Rule.** Tracking tightens as size grows (-0.03em at display scale) and loosens toward neutral at body scale; caps labels get positive tracking (0.14em) instead of the old 0.42em maximalist spacing.
 
 ## Layout
 
-Max width 1440px, gutters `clamp(20px, 4vw, 56px)`, 12-column grid on desktop collapsing to one column (`grid-cols-1`). Sections breathe with `clamp(96px, 12vw, 180px)` vertical padding. Section order: Hero → Showreel → About → What I do → Stack band → Work → Experience (cream sheet) → Credentials → Contact.
+Six full-height "acts" stacked vertically (`min-height: 100vh` each), the fixed 3D ring rendered behind them via a z-indexed canvas. Sections fade through a solid dark gradient (`.act-solid`) so the ring reads as showing "between" scenes rather than being covered. Content is edge-padded with `clamp()` (`clamp(1.2rem, 6vw, 6rem)` typical), so density adapts continuously rather than jumping between fixed breakpoints. Grids collapse from 4→2→1 columns at 1100px/560px for cards, 3→2→1 for credentials. Case bands split 44%/56% on desktop and stack on mobile (<880px).
 
 ## Elevation & Depth
 
-Flat. Depth comes from ground changes (cream and dark sheets with rounded top corners sliding over each other), hairlines and the frosted nav. Shadows only on the reel frame, the cursor pill and the floating certificate preview.
+Hybrid: flat black stage, translucent glass surfaces float above it. Depth comes from `backdrop-filter: blur()` + a faint white fill (rgba(255,255,255,0.04–0.06)) + a 1px hairline border, not from drop shadows — the one exception is the certificate lightbox and hover states, which add a soft directional shadow to read as physically lifted.
+
+### Shadow Vocabulary
+- **Card lift** (`box-shadow: 0 4px 24px rgba(0,0,0,0.6)`): certificate thumbnail hover.
+- **Lightbox pop** (`box-shadow: 0 8px 60px rgba(0,0,0,0.7)`): fullscreen certificate image.
+- **Accent glow** (`box-shadow: 0 0 12px 1px var(--pa)`): the work-card baseline, tied to that project's accent.
+
+### Named Rules
+**The Glass-Not-Shadow Rule.** Nav, cards, and the lightbox get their depth from blur + translucency, not shadows. Shadows are reserved for the few elements meant to feel physically lifted off the glass (cert thumbnails, the lightbox image).
 
 ## Shapes
 
-Rounded but restrained: 20–24px on media and cards, 16px on stat tiles, full pills on buttons and chips, square amber markers on labels.
+Consistently rounded, never sharp: 22–24px on cards and frames, 18px on smaller glass surfaces, 14px on thumbnails, full pill (999px) on buttons and dot indicators. Corner "ticks" (small L-shaped hairline brackets) mark the work cards' corners as a signature geometric detail, echoing camera-viewfinder framing.
 
 ## Components
 
-### Showreel
-16:9 frame on landscape screens (grows from column width to full-bleed on scroll), 9:16 on phones. Muted autoplay in view; click for sound (restarts from 0 the first time), pause, fullscreen, and a clickable chapter rail (Data, Language, Agents, Products, Models that ship, Stack, Ayush Das).
-
 ### Buttons
-Pill, 48px tall. Primary amber with ink text; ghost with hairline ring. The icon slides out and a copy slides in on hover.
+- **Shape:** full pill (999px radius).
+- **Primary (resume-btn):** translucent white fill (rgba(255,255,255,0.04)) + blur(16px), 1px hairline border, uppercase label type, padding 1rem 2.6rem.
+- **Hover/Focus:** border shifts to system blue, fill warms to rgba(41,151,255,0.12); all interactive elements scale to 0.975 on `:active` for instant press feedback.
 
-### Capability rows
-Full-width index rows (counter, giant word, caption + tool chips). Hover floods the row amber from the bottom and turns everything ink.
-
-### Project cards
-16:9 screenshot stage, index, title, tagline, tool line, Live demo / Code links; whole card opens the case study. Projects without a screenshot get generated dot-swell art.
+### Cards / Containers (work-card, skill-card, cred-cell)
+- **Corner Style:** 18–22px radius, plus hairline corner ticks on work cards.
+- **Background:** rgba(255,255,255,0.035–0.06), `backdrop-filter: blur(20–24px)`.
+- **Shadow Strategy:** none at rest; accent-colored glow only as a hover/reveal signal (work-card baseline).
+- **Border:** 1px hairline, brightens to the section's accent color on hover/focus.
 
 ### Navigation
-Fixed bar, transparent over the hero, frosted after scrolling, hides on scroll-down. Mobile: full-screen sheet with numbered links.
+- Fixed, full-width translucent bar (`rgba(10,10,12,0.55)` + `blur(20px) saturate(180%)`), 1px hairline bottom border. Wordmark centered; a left-edge act counter and right-edge dot rail (blue-glow active dot) provide wayfinding without a traditional link row, matching the single-screen scroll-story structure.
+
+### Signature Component: The Ring
+A 3D twisted-torus (three.js) with a neutral space-gray shell and a warm-to-cool inner glow that re-tints per act — the site's one recurring, load-bearing piece of "brand," carried nowhere else as an image or logo.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** keep the reel uncovered apart from its bottom control pills.
-- **Do** use the mono counter label to open every section.
-- **Do** keep motion one-shot (reveals) or scroll-tied (scrubs); respect reduced motion everywhere.
+- **Do** keep exactly one accent hue live per section, mirrored between the ring glow and that section's labels.
+- **Do** build every floating surface (nav, card, lightbox) as translucent glass — `backdrop-filter` + hairline border, never a flat opaque fill.
+- **Do** give every clickable element instant `:active` press feedback (scale 0.975) — no waiting for release to show response.
+- **Do** tighten letter-spacing as type size grows; loosen (small positive tracking) only on caps labels.
 
 ### Don't:
-- **Don't** add a second accent colour or decorative gradients.
-- **Don't** bring back cursor trails, 3D carousels, orbiting icons or pinned tunnels.
-- **Don't** put React components inside `[data-split]` headings (SplitText re-parses them).
+- **Don't** introduce a second display typeface or bring back a serif — Inter/Inter Tight carries the whole system.
+- **Don't** stack two translucent surfaces on top of each other — legibility collapses.
+- **Don't** let more than one accent color read as dominant in the same viewport.
+- **Don't** add drop shadows to glass surfaces as a substitute for blur — depth comes from material, not shadow, except on the two named lifted elements.
