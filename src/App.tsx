@@ -18,7 +18,6 @@ import { LogoMark } from './LogoMark'
 import { MinimalNav } from './MinimalNav'
 import { IntroReveal } from './IntroReveal'
 import { SmoothScroll } from './SmoothScroll'
-import { CursorFX } from './CursorFX'
 import { ParticleButton } from './ParticleButton'
 import { DynamicInfo } from './DynamicInfo'
 import { DepthTunnel } from './DepthTunnel'
@@ -29,12 +28,14 @@ import { LINKS } from './content'
 // encode failed in Firefox and many Chrome setups) and seeks instantly, which
 // keeps the cursor-driven head turn smooth.
 const VIDEO_SRC = '/avatar-head.mp4'
+// Middle frame — the clip is centred on load, so the poster matches the first
+// painted frame and the hero isn't blank while the video downloads.
+const VIDEO_POSTER = '/avatar-head-poster.webp'
 
 const BRAND = 'Ayush Das'
 const EMAIL = 'das.ayush4890@gmail.com'
 const LINKEDIN = 'https://linkedin.com/in/ayushdas4890'
-const RESUME =
-  'https://portfolio-website-zeta-topaz-84.vercel.app/Ayush_Das_ML_Resume.pdf'
+const RESUME = '/Ayush_Das_ML_Resume.pdf'
 
 const SECTIONS = [
   { id: 'home', label: 'Home' },
@@ -113,6 +114,7 @@ function BackgroundVideo() {
       <video
         ref={videoRef}
         src={VIDEO_SRC}
+        poster={VIDEO_POSTER}
         muted
         playsInline
         preload="auto"
@@ -415,7 +417,6 @@ export default function App() {
     <>
       <BackgroundVideo />
       <SpaceBackdrop />
-      <CursorFX />
       {onCaseStudies ? (
         <CaseStudies targetId={caseTarget} />
       ) : (

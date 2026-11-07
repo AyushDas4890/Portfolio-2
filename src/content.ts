@@ -7,7 +7,7 @@ export const LINKS = {
   github: 'https://github.com/AyushDas4890',
   portfolio: PF,
   linkedin: 'https://linkedin.com/in/ayushdas4890',
-  resume: `${PF}/Ayush_Das_ML_Resume.pdf`,
+  resume: '/Ayush_Das_ML_Resume.pdf',
 }
 
 export interface Experience {

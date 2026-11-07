@@ -2,7 +2,7 @@
 
 ## How to use this KB (for agents)
 1. Read this index first. Pick notes by their descriptions; open only those (1–3 notes beats scanning the repo).
-2. This KB describes the v2 "glossy ring" React 18 + Vite 5 portfolio SPA. Content lives in `src/data.js`; design contract in `PRODUCT.md`; reference look in `frames.zip`.
+2. Current code: React 19 + Vite 8 + TypeScript SPA (`src/main.tsx` → `src/App.tsx`). Content lives in `src/content.ts`; design contract in `PRODUCT.md`. Notes not marked v3 / updated 2026-11-07 still describe the old v2 JS + three.js build — trust the source over them.
 3. Cite the note `id` when you use information from it.
 
 ## How to update this KB (for agents)
@@ -19,8 +19,8 @@
 - `20260712-design-system` — **Design system v2** — `topics/design/design-system.md` — Tokens, Fraunces/Archivo type, six-act structure, frames reference.
 
 ### code
-- `20260712-architecture` — **Code architecture v2** — `topics/code/architecture.md` — Router, file map, data flow, artwork fallbacks.
-- `20260712-hero-ring` — **Hero 3D ring** — `topics/code/hero-ring.md` — Twisted-torus geometry, physical material, per-section palette API, perf caps.
+- `20260712-architecture` — **Code architecture v3** — `topics/code/architecture.md` — Entry, hash routing, section list, file map, motion libs, chunks.
+- `20260712-hero-ring` — **Hero — avatar video (no 3D ring)** — `topics/code/hero-ring.md` — All-intra cursor-scrubbed video, poster, IntroReveal clip-path, share image.
 - `20260712-scroll-choreography` — **Scroll choreography** — `topics/code/scroll-choreography.md` — Lenis + ScrollTrigger wiring, stage object, mask reveals, tilt/sweep/parallax, reduced-motion.
 
 ### content
