@@ -28,6 +28,9 @@ import { LINKS } from './content'
 // encode failed in Firefox and many Chrome setups) and seeks instantly, which
 // keeps the cursor-driven head turn smooth.
 const VIDEO_SRC = '/avatar-head.mp4'
+// Middle frame — the clip is centred on load, so the poster matches the first
+// painted frame and the hero isn't blank while the video downloads.
+const VIDEO_POSTER = '/avatar-head-poster.webp'
 
 const BRAND = 'Ayush Das'
 const EMAIL = 'das.ayush4890@gmail.com'
@@ -111,6 +114,7 @@ function BackgroundVideo() {
       <video
         ref={videoRef}
         src={VIDEO_SRC}
+        poster={VIDEO_POSTER}
         muted
         playsInline
         preload="auto"
