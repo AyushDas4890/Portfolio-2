@@ -18,7 +18,6 @@ import { LogoMark } from './LogoMark'
 import { MinimalNav } from './MinimalNav'
 import { IntroReveal } from './IntroReveal'
 import { SmoothScroll } from './SmoothScroll'
-import { CursorFX } from './CursorFX'
 import { ParticleButton } from './ParticleButton'
 import { DynamicInfo } from './DynamicInfo'
 import { DepthTunnel } from './DepthTunnel'
@@ -33,8 +32,7 @@ const VIDEO_SRC = '/avatar-head.mp4'
 const BRAND = 'Ayush Das'
 const EMAIL = 'das.ayush4890@gmail.com'
 const LINKEDIN = 'https://linkedin.com/in/ayushdas4890'
-const RESUME =
-  'https://portfolio-website-zeta-topaz-84.vercel.app/Ayush_Das_ML_Resume.pdf'
+const RESUME = '/Ayush_Das_ML_Resume.pdf'
 
 const SECTIONS = [
   { id: 'home', label: 'Home' },
@@ -415,7 +413,6 @@ export default function App() {
     <>
       <BackgroundVideo />
       <SpaceBackdrop />
-      <CursorFX />
       {onCaseStudies ? (
         <CaseStudies targetId={caseTarget} />
       ) : (
